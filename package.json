@@ -10,7 +10,6 @@
     "puppeteer": "^24.3.0"
   },
   "scripts": {
-    "build": "npm install",
     "start": "node index.js"
   },
   "keywords": [],
