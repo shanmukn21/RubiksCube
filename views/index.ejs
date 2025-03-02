@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/assets/icon.png" type="image/x-icon">
+    <title>RubiksCube</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div class="cubeb">
+        <div class="combined arrows">
+            <button class="abtn ArrowLeft"><</button>
+            <button class="sbtn ArrowDown">v</button>
+            <button class="dbtn ArrowRight">></button>
+        </div>
+        <div class="separate">
+            <button class="scramble">Scramble</button>
+            <button class="reset">Reset</button>
+        </div>
+    </div>
+    <div class="scene levitate" id="scene">
+        <div class="pivot centered" id="pivot">
+            <div class="cube" id="cube"></div>
+        </div>
+    </div>
+    <div class="sideb">
+        <div class="combined" id="combined">
+            <button class="gclr">G</button>
+            <button class="bclr">B</button>
+            <button class="wclr">W</button>
+            <button class="yclr">Y</button>
+            <button class="oclr">O</button>
+            <button class="rclr">R</button>
+            <button class="gclrr">G'</button>
+            <button class="bclrr">B'</button>
+            <button class="wclrr">W'</button>
+            <button class="yclrr">Y'</button>
+            <button class="oclrr">O'</button>
+            <button class="rclrr">R'</button>
+        </div>
+        <div class="separate">
+            <button class="srev">Rollback</button>
+            <button class="superflip">*</button>
+            <button class="solve">Solve</button>
+        </div>
+    </div>
+    <div class="graph">
+        <div class="wlyr">
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+        </div>
+        <div class="glyr">
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+        </div>
+        <div class="rlyr">
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+        </div>
+        <div class="blyr">
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+        </div>
+        <div class="olyr">
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+        </div>
+        <div class="ylyr">
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+            <div class="lyr"></div>
+        </div>
+    </div>
+    <button id="fullscreenBtn" class="screen">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff">
+            <path
+                d="M120-120v-200h80v120h120v80H120Zm520 0v-80h120v-120h80v200H640ZM120-640v-200h200v80H200v120h-80Zm640 0v-120H640v-80h200v200h-80Z">
+            </path>
+        </svg>
+    </button>
+
+    <script src="/script.js"></script>
+</body>
+
+</html>
