@@ -11,6 +11,20 @@
 
 <body>
     <div class="cubeb">
+        <div class="loading-wrapper">
+            <div class="loading-container">
+                <div class="loading-cube">
+                    <div class="loading-front"></div>
+                    <div class="loading-back"></div>
+                    <div class="loading-right"></div>
+                    <div class="loading-left"></div>
+                    <div class="loading-top"></div>
+                    <div class="loading-bottom"></div>
+                </div>
+            </div>
+            <div class="loading-text">Finding Solution... <span id="timer">0s</span></div>
+        </div>
+        <div id="moves"></div>
         <div class="combined arrows">
             <button class="abtn ArrowLeft"><</button>
             <button class="sbtn ArrowDown">v</button>
@@ -115,6 +129,7 @@
             <div class="lyr"></div>
         </div>
     </div>
+    <div class="clock" id="clock">00:00</div>
     <button id="fullscreenBtn" class="screen">
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff">
             <path

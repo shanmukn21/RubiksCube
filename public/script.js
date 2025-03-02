@@ -65,7 +65,7 @@ const idMap = [[
     [9, 8, 10],
     [41, 40, 42]
 ]], centers = [0, 1, 2, 4, 8, 16], edges = [20, 5, 6, 36, 17, 18, 33, 34, 24, 9, 10, 40], whiteedges = [20, 6, 36, 5], whitecorners = [37, 38, 22, 21], corners = [21, 22, 37, 38, 25, 26, 41, 42], midedges = [33, 34, 18, 17], middirections = ["front", "right", "back", "left"], yellowedges = [9, 40, 10, 24], yellowcorners = [25, 41, 42, 26],
-    perspective = ['green', 'red', 'blue', 'orange'],pivot = document.getElementById("pivot");;
+    perspective = ['green', 'red', 'blue', 'orange'], pivot = document.getElementById("pivot"), moves = document.getElementById("moves");
 
 function mx(i, j) {
     return ([2, 4, 3, 5][j % 4 | 0] + i % 2 * ((j | 0) % 4 * 2 + 3) + 2 * (i / 2 | 0)) % 6;
@@ -130,11 +130,11 @@ function isCubeSolved() {
             }
         }
     }
-    youcan=true;
+    youcan = true;
     changeclicking();
-    facerotated.length=0;
-    direction.length=0;
-    scrambledstring="";
+    facerotated.length = 0;
+    direction.length = 0;
+    scrambledstring = "";
     return true;
 }
 
@@ -151,6 +151,7 @@ function animateRotation(face, cw, currentTime) {
     if (rotateface) {
         if (scene.classList.contains('levitate')) {
             scene.classList.remove('levitate');
+            moves.innerHTML="";
         }
         if (!backing) {
             facerotated.push(face);
@@ -176,6 +177,7 @@ function animateRotation(face, cw, currentTime) {
             if (isCubeSolved()) {
                 if (!scene.classList.contains('levitate')) {
                     scene.classList.add('levitate');
+                    stopClock();
                 }
             }
             printCubeState();
@@ -328,7 +330,7 @@ function oppositecolor(color) {
     }
 }
 
-function charget(i){
+function charget(i) {
     switch (i) {
         case 'B': return 'r';
         case 'F': return 'l';
@@ -339,21 +341,25 @@ function charget(i){
     }
 }
 
-function debug(solution){
-    scrambledstring='';
+function debug(solution) {
+    scrambledstring = '';
     let ans = '';
+    let movcnt=0;
     for (let i = 0; i < solution.length; i++) {
-        if(solution[i]===" "||solution[i]==="'"){
+        if (solution[i] === " " || solution[i] === "'") {
             ans += solution[i];
-        } else if(solution[i]==="2"){
-            ans += " "+charget(solution[i-1]);
+        } else if (solution[i] === "2") {
+            ans += " " + charget(solution[i - 1]);
         } else {
             ans += charget(solution[i]);
+            movcnt++;
         }
     }
-    //console.log(ans);
-    processChar(0,ans,"solution");
     
+    moves.innerHTML=`${movcnt}mov(${seconds}sec):${solution}`;
+    //console.log(ans);
+    processChar(0, ans, "solution");
+
 }
 
 function getchar(i) {
@@ -685,7 +691,7 @@ function processChar(index, formula, purpose) {
         } else if (purpose === "plus") {
             console.log('solving plus pc');
             solvecross();
-        } else if (purpose==="midleft"||purpose==="midright"){
+        } else if (purpose === "midleft" || purpose === "midright") {
             console.log('solving second layer pc');
             secondlayer();
         }
@@ -774,7 +780,7 @@ function executeformula(formula, purpose) {
     } else if (purpose === "plus") {
         console.log('solving plus ef');
         solvecross();
-    } else if (purpose === "midleft"||purpose==="midright") {
+    } else if (purpose === "midleft" || purpose === "midright") {
         console.log('solving second layer ef');
         secondlayer();
     } else {
@@ -782,11 +788,11 @@ function executeformula(formula, purpose) {
     }
 }
 
-function position(){
-    if(topcolor==='yellow'){
+function position() {
+    if (topcolor === 'yellow') {
         rotateCube('ArrowUp');
     }
-    while(leftcolor!=='green'){
+    while (leftcolor !== 'green') {
         rotateCube('ArrowLeft');
     }
 }
@@ -856,20 +862,34 @@ document.getElementById("fullscreenBtn").addEventListener("click", function () {
     }
 });
 
-document.querySelector('.solve').addEventListener('click',async () => {
+document.querySelector('.solve').addEventListener('click', async () => {
     if (!scene.classList.contains('levitate')) {
         position();
+        seconds=0;
+        document.querySelector(`.loading-wrapper`).style.display = "flex";
         console.log('fetching');
-        youcan=false;
+        youcan = false;
         changeclicking();
         const response = await fetch(`/solve?cubeState=${numstring}`);
         const data = await response.json();
         if (data.solution) {
-            console.log('solution:',data.solution);
+            console.log(seconds);
+            document.querySelector(`.loading-wrapper`).style.display = "none";
+            clockSeconds = 0;
+            updateClock();
+            clockRunning = false;
+            startClock();
+            console.log('solution:', data.solution);
             debug(data.solution);
         } else {
-            console.log("No solution found.");
-            youcan=true;
+            console.log(seconds);
+            document.querySelector(`.loading-wrapper`).style.display = "none";
+            stopClock();
+            clockSeconds = 0;
+            updateClock();
+            clockRunning = false; console.log("No solution found.");
+            startClock();
+            youcan = true;
             changeclicking();
             solveit = true;
             rollback();
@@ -892,3 +912,47 @@ document.querySelector('.superflip').addEventListener('click', () => {
     executeformula("r l u u f  u' d f f r r b b l u u f' b' u r r d f f u r r u", "superflip");
 });
 
+
+let seconds = 0;
+let timerInterval = setInterval(() => {
+    seconds++;
+    document.getElementById("timer").textContent = seconds + "s";
+}, 1000);
+
+let clockRunning = false;
+let clockInterval;
+let clockSeconds = 0;
+let clockElement = document.getElementById("clock");
+
+function updateClock() {
+    let minutes = Math.floor(clockSeconds / 60);
+    let seconds = clockSeconds % 60;
+    clockElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function startClock() {
+    clockInterval = setInterval(() => {
+        clockSeconds++;
+        updateClock();
+    }, 1000);
+}
+
+function stopClock() {
+    clearInterval(clockInterval);
+}
+
+clockElement.addEventListener("click", () => {
+    if (clockRunning) {
+        stopClock();
+    } else {
+        startClock();
+    }
+    clockRunning = !clockRunning;
+});
+
+clockElement.addEventListener("dblclick", () => {
+    stopClock();
+    clockSeconds = 0;
+    updateClock();
+    clockRunning = false;
+});

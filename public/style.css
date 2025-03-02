@@ -281,6 +281,68 @@ button:active {
     margin-right: 100px;
 }
 
+.loading-wrapper {
+    display: none;
+    align-items: center;
+    zoom:0.5;
+}
+
+.loading-container {
+    width: 50px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 400px;
+}
+
+.loading-cube {
+    width: 40px;
+    height: 40px;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: loading-rotateCube 1.5s infinite linear;
+    zoom:0.5;
+}
+
+.loading-cube div {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: #f00;
+    border: 2px solid #000;
+    opacity: 0.9;
+}
+
+.loading-cube .loading-front  { transform: rotateY(  0deg) translateZ(20px); background: red; }
+.loading-cube .loading-back   { transform: rotateY(180deg) translateZ(20px); background: blue; }
+.loading-cube .loading-right  { transform: rotateY( 90deg) translateZ(20px); background: yellow; }
+.loading-cube .loading-left   { transform: rotateY(-90deg) translateZ(20px); background: green; }
+.loading-cube .loading-top    { transform: rotateX( 90deg) translateZ(20px); background: white; }
+.loading-cube .loading-bottom { transform: rotateX(-90deg) translateZ(20px); background: orange; }
+
+@keyframes loading-rotateCube {
+    from { transform: rotateX(0deg) rotateY(0deg); }
+    to { transform: rotateX(360deg) rotateY(360deg); }
+}
+
+.loading-text {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    color: #fff;
+}
+
+.clock {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    color: white;
+}
 @keyframes rgbColor {
     0% {
         color: #F3F3F3;
@@ -382,7 +444,10 @@ button:active {
     #fullscreenBtn {
         display: flex;
     }
-
+    .clock{
+        right: 80px;
+        top:35px;
+    }
     body {
         height: 100vh;
         zoom: 1;
@@ -463,4 +528,14 @@ button:active {
     #fullscreenBtn {
         display: flex;
     }
+    
+    .clock{
+        right: 80px;
+        top:35px;
+    }
+}
+#moves{
+    font-style: Arial;
+    zoom:0.5;
+    color:white;
 }
