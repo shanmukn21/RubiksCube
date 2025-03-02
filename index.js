@@ -39,7 +39,7 @@ app.get("/solve", async (req, res) => {
 
         await page.goto(`https://rubikscu.be/solver/?cube=0${cubeState}`, { waitUntil: "networkidle2" });
 
-        await page.waitForSelector("#solution span", { timeout: 30000 });
+        await page.waitForSelector("#solution span", { timeout: 300000 });
 
         const solutionSteps = await page.evaluate(() => {
             return Array.from(document.querySelectorAll("#solution span"))
