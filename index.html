@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="assets/icon.png" type="image/x-icon">
+    <title>Rubiks cube</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/cubejs/cube.js"></script>
+    <script src="assets/cubejs/async.js"></script>
+    <script src="assets/cubejs/solve.js"></script>
+    <script src="assets/cubejs/worker.js"></script>
+</head>
+
+<body>
+    <div class="cubeb">
+        <div id="moves"></div>
+        <div class="combined arrows">
+            <button class="abtn ArrowLeft"><i><</i></button>
+            <button class="sbtn ArrowDown"><i>v</i></button>
+            <button class="dbtn ArrowRight"><i>></i></button>
+        </div>
+        <div class="separate inputhide">
+            <button class="scramble"><i>Scramble</i></button>
+            <button class="superflip"><i>Superflip</i></button>
+            <button class="inputclr"><i>Input</i></button>
+        </div>
+    </div>
+    <div class="scene levitate" id="scene">
+        <div class="pivot centered" id="pivot">
+            <div class="cube" id="cube"></div>
+        </div>
+    </div>
+    <div class="sideb">
+        <div class="input-container">
+            <div class="white"></div>
+            <div class="green"></div>
+            <div class="red"></div>
+            <div class="blue"></div>
+            <div class="orange"></div>
+            <div class="yellow"></div>
+        </div>
+        <div class="combined inputhide" id="combined">
+            <button class="gclr"><i>G</i></button>
+            <button class="bclr"><i>B</i></button>
+            <button class="wclr"><i>W</i></button>
+            <button class="yclr"><i>Y</i></button>
+            <button class="oclr"><i>O</i></button>
+            <button class="rclr"><i>R</i></button>
+            <button class="gclrr"><i>G'</i></button>
+            <button class="bclrr"><i>B'</i></button>
+            <button class="wclrr"><i>W'</i></button>
+            <button class="yclrr"><i>Y'</i></button>
+            <button class="oclrr"><i>O'</i></button>
+            <button class="rclrr"><i>R'</i></button>
+        </div>
+        <div class="separate">
+            <button class="reset"><i>Reset</i></button>
+            <button class="srev inputhide"><i>Rollback</i></button>
+            <button class="solve inputhide"><i>Solve</i><br><i class="layer">Bylayers</i></button>
+            <button class="fast inputhide"><i>Solve</i><br><i class="kociemba">Kociemba</i></button>
+            <button class="done"><i>Done</i></button>
+        </div>
+    </div>
+    <div class="graph">
+        <div class="wlyr">
+        </div>
+        <div class="glyr">
+        </div>
+        <div class="rlyr">
+        </div>
+        <div class="blyr">
+        </div>
+        <div class="olyr">
+        </div>
+        <div class="ylyr">
+        </div>
+    </div>
+    <div class="clock" id="clock">00:00</div>
+    <span id="fullscreenBtn" class="screen">
+        <i><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff">
+                <path
+                    d="M120-120v-200h80v120h120v80H120Zm520 0v-80h120v-120h80v200H640ZM120-640v-200h200v80H200v120h-80Zm640 0v-120H640v-80h200v200h-80Z">
+                </path>
+            </svg>
+        </i>
+    </span>
+    <script src="assets/script.js"></script>
+</body>
+
+</html>
