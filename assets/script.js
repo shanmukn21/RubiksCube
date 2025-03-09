@@ -45,7 +45,7 @@ var colors = ['green', 'blue', 'white', 'yellow', 'orange', 'red'],
     rotateface = true, backing = false, solveit = false, youcan = true,
     facerotated = [], direction = [],
     state = Array(6).fill().map(() => Array(3).fill().map(() => Array(3))),
-    movecount = 0, rotateX = -35, rotateY = 45, count = 0, pi = 0, topcolor = 'white', leftcolor = 'green', frontcolor = 'red', downcolor = 'yellow', rightcolor = 'blue', backcolor = 'orange';
+    depth = 22, movecount = 0, rotateX = -35, rotateY = 45, count = 0, pi = 0, topcolor = 'white', leftcolor = 'green', frontcolor = 'red', downcolor = 'yellow', rightcolor = 'blue', backcolor = 'orange';
 
 const idMap = [[
     [21, 5, 37],
@@ -142,7 +142,6 @@ function isCubeSolved() {
 
     for (let face in faceColors) {
         let stickers = document.querySelectorAll(`.element.${face} .sticker`);
-
         for (let sticker of stickers) {
             if (!sticker.classList.contains(faceColors[face])) {
                 return false;
@@ -190,14 +189,24 @@ function animateRotation(face, cw, currentTime) {
         setTimeout(function () {
             rotateface = true;
             movecount++;
+            //console.log('actual move count:', movecount);
+            //console.log('actual moves:\n',scrambledstring);
+            let result = simplifyMoves(scrambledstring);
+            //console.log('simplified movecount:',result.moveCount);
+            //console.log('simplified moves:\n',result.moves);
+            if (result.movecount > 22) {
+                depth = 22;
+            } else {
+                depth = result.moveCount;
+            }
+            //console.log('maxdepth',depth);
             if (isCubeSolved()) {
                 if (!scene.classList.contains('levitate')) {
-                    if (moves.childElementCount === 0 && movecount > 2) {
-                        moves.innerHTML = "solved the cube in " + movecount + " moves!";
+                    if (moves.childElementCount === 0 && result.movecount > 0) {
+                        moves.innerHTML = "solved the cube in " + result.movecount + " moves!";
+                        console.log('cube solved');
                     }
                     movecount = 0;
-                    console.log('cube solved');
-                    console.log('move count:', movecount);
                     scene.classList.add('levitate');
                     stopClock();
                     youcan = true;
@@ -264,14 +273,6 @@ function rollback() {
         backing = true;
         animateRotation(facerotated.pop(), !direction.pop(), Date.now());
         backing = false;
-        if (facerotated.length === 0) {
-            solveit = false;
-            youcan = true;
-            changeclicking();
-        }
-    }
-    if (solveit) {
-        setTimeout(rollback, 400);
     }
 }
 
@@ -338,6 +339,8 @@ function mix() {
         count = 0;
         youcan = true;
         changeclicking();
+        console.log('scrambled:',scrambledstring);
+        scrambledstring='';
     }
 }
 
@@ -549,10 +552,16 @@ function secondlayer() {
     if (pieceleft === leftcolor && pieceright === frontcolor) {
         //console.log('this is already solved,moving on');
         if (midsolved()) {
+
             moves.innerHTML = 'solving third layer';
             console.log('second layer solved');
             console.log('solving third layer');
+            
             executeformula("f r u r' u' f'", "plus");
+
+            //youcan=true;
+            //changeclicking();
+
         } else {
             rotateCube('ArrowLeft');
             setTimeout(secondlayer, 400);
@@ -673,6 +682,11 @@ function firstcorners() {
             console.log('solving second layer');
             moves.innerHTML = 'solving second layer';
             setTimeout(secondlayer, 400);
+        } else {
+            console.log('first layer solved');
+            console.log('cube is solved');
+            youcan=true;
+            changeclicking();
         }
     } else {
         let child1 = document.querySelector(`#piece${whitecorners[pi]}`);
@@ -729,6 +743,10 @@ function firstcorners() {
                         console.log('solving second layer');
                         moves.innerHTML = 'solving second layer';
                         setTimeout(secondlayer, 400);
+                    } else {
+                        console.log('first layer solved');
+                        youcan=true;
+                        changeclicking();
                     }
                 } else {
                     rotateCube('ArrowLeft');
@@ -796,8 +814,9 @@ function firstedges() {
         }
         if (piecetop === topcolor || piecefront === topcolor || rightpiecefront === topcolor || rightpieceright === topcolor || leftpieceleft === topcolor || leftpiecefront === topcolor || downpiecebottom === topcolor || downpiecefront === topcolor) {
             if (rotationcount === 0) {
-                //console.log(piecetop, piecefront);
+                console.log(piecetop, piecefront);
                 if (piecetop === topcolor && piecefront === frontcolor) {
+                    console.log('piece solved');
                     if (rightpiecefront === topcolor || rightpieceright === topcolor || leftpieceleft === topcolor || leftpiecefront === topcolor || downpiecebottom === topcolor || downpiecefront === topcolor) {
                         processChar(0, "", "firstedges");
                     } else {
@@ -807,6 +826,7 @@ function firstedges() {
                         }, 400);
                     }
                 } else if (piecetop === frontcolor && piecefront === topcolor) {
+                    console.log('flipped piece');
                     processChar(0, "f' u l' u'", "firstedges");
                 } else if (piecetop === topcolor || piecefront === topcolor) {
                     if (rightpiecefront !== topcolor && rightpieceright !== topcolor) {
@@ -912,13 +932,14 @@ function lastrotate() {
     if (!isCubeSolved()) {
         animateRotation(3, true, Date.now());
         setTimeout(lastrotate, 400);
+    } else {
+        youcan=true;
+        changeclicking();
     }
 }
 
 function processChar(index, formula, purpose) {
     if (index >= formula.length) {
-        youcan = true;
-        changeclicking();
         if (purpose === "final") {
             if (!frcSolved(yellowcorners[pi])) {
                 processChar(0, formula, purpose);
@@ -980,6 +1001,9 @@ function processChar(index, formula, purpose) {
             } else {
                 firstedges();
             }
+        } else {
+            youcan = true;
+            changeclicking();
         }
         return;
     }
@@ -1103,7 +1127,7 @@ function debug(solution) {
     moves.appendChild(spanp);
     moves.style.minHeight = '60px';
     moves.style.maxHeight = '60px';
-    //moveit(movcnt);
+    
     processChar(0, ans, "solution");
 }
 function position() {
@@ -1139,41 +1163,82 @@ function stopClock() {
 
 async function solveCube(cubeState) {
     try {
-        await Cube.initSolver(); // Ensure solver is initialized
-        if (isValidCubeState(cubeState)) {
-            let cube = Cube.fromString(cubeState); // Create cube from state
-            //console.log("Initial Cube State:", cube.asString()); // Check state
-            let solution = cube.solve(); // Solve the cube
-            return solution;
-        } else {
-            console.log("Invalid cube state");
-            moves.innerHTML = 'Invalid cube state';
+        await Cube.initSolver();
+        let cube = Cube.fromString(cubeState); // Create cube from state
+        console.log('solver initialised:');
+        console.log(cube.asString());
+        let solution;
+        try {
+            solution = cube.solve();
+            console.log('after solving with:');
+            console.log(solution);
+            cube.move(solution);
+            console.log('cube state:');
+            console.log(cube.asString());
+            if (isValidCubeState(cubeState)&&cube.asString() === "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB") {
+                return solution;
+            } else {
+                moves.innerHTML = 'Invalid cube';
+                setTimeout(() => {
+                    moves.innerHTML = '';
+                }, 3000);
+                return null;
+            }
+        } catch (error) {
+            console.error(error);
+            moves.innerHTML = 'Invalid cube';
             setTimeout(() => {
                 moves.innerHTML = '';
             }, 3000);
             return null;
         }
     } catch (error) {
-        console.error("Error solving cube:", error);
+        console.error(error);
     }
 }
 
 solveCube("UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB");
+
 function isValidCubeState(cubeState) {
     if (typeof cubeState !== "string" || cubeState.length !== 54) {
-        return false; // Must be a 54-character string
+        return false; 
     }
 
-    // Count occurrences of each face color
     let counts = { U: 0, R: 0, F: 0, D: 0, L: 0, B: 0 };
     for (let char of cubeState) {
-        if (!(char in counts)) return false; // Invalid character
+        if (!(char in counts)) return false;
         counts[char]++;
     }
 
-    // Each color must appear exactly 9 times
     return Object.values(counts).every(count => count === 9);
 }
+
+function simplifyMoves(moves) {
+    const moveList = moves.trim().split(/\s+/);
+    const moveStack = [];
+
+    for (let move of moveList) {
+        let baseMove = move[0];
+        let modifier = move.length > 1 ? move[1] : "";
+        let count = modifier === "2" ? 2 : modifier === "'" ? -1 : 1;
+
+        if (moveStack.length > 0 && moveStack[moveStack.length - 1][0] === baseMove) {
+            let prevMove = moveStack.pop();
+            let prevCount = prevMove.length > 1 ? (prevMove[1] === "2" ? 2 : -1) : 1;
+
+            let newCount = ((prevCount + count) % 4 + 4) % 4; // Normalize to range 0-3
+
+            if (newCount === 1) moveStack.push(baseMove);
+            else if (newCount === 2) moveStack.push(baseMove + "2");
+            else if (newCount === 3) moveStack.push(baseMove + "'");
+        } else {
+            moveStack.push(move);
+        }
+    }
+
+    return { moves: moveStack.join(" "), movecount: moveStack.length };
+}
+
 document.addEventListener("keydown", (event) => {
     if (youcan) {
         switch (event.key) {
@@ -1278,13 +1343,13 @@ document.querySelector('.fast').addEventListener('click', async () => {
     position();
     youcan = false;
     changeclicking();
-    //let solution=await solveCube(scrambledstring);//sending moves made
+    
     let solution = await solveCube(present);//sending state
     clockSeconds = 0;
     updateClock();
     clockRunning = false;
     startClock();
-    //console.log('koceimba:',solution);
+    
     debug(solution);
 });
 
@@ -1299,6 +1364,7 @@ document.querySelector('.scramble').addEventListener('click', () => {
 document.querySelector('.srev').addEventListener('click', () => {
     rollback();
 });
+
 document.querySelector('.superflip').addEventListener('click', () => {
     if (scene.classList.contains('levitate')) { executeformula("r l u u f  u' d f f r r b b l u u f' b' u r r d f f u r r u", "superflip"); }
 });
@@ -1354,7 +1420,6 @@ document.querySelector('.inputclr').addEventListener('click', () => {
     printCubeState();
 });
 
-
 document.querySelector('.done').addEventListener('click', async () => {
 
     let solution = await solveCube(present);//sending state
@@ -1368,4 +1433,5 @@ document.querySelector('.done').addEventListener('click', async () => {
         document.querySelector('.input-container').style.display = 'none';
         document.querySelectorAll('.inputhide').forEach(hider => { hider.style.display = 'flex' });
     }
+
 });

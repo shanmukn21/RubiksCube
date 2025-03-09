@@ -627,7 +627,7 @@ button:active {
     }
 }
 
-@media(max-height:500px) {
+@media(max-height:632px) {
     #fullscreenBtn {
         display: flex;
     }
@@ -635,6 +635,9 @@ button:active {
         right: 80px;
         top: 35px;
     }
+}
+
+@media(max-height:500px) {    
     .graph {
         zoom: 0.75;
     }
