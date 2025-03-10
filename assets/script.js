@@ -159,7 +159,6 @@ function animateRotation(face, cw, currentTime) {
         scrambledstring += "'";
     }
     scrambledstring += " ";
-    //console.log(scrambledstring);
     if (rotateface) {
         if (scene.classList.contains('levitate')) {
             scene.classList.remove('levitate');
@@ -189,22 +188,16 @@ function animateRotation(face, cw, currentTime) {
         setTimeout(function () {
             rotateface = true;
             movecount++;
-            //console.log('actual move count:', movecount);
-            //console.log('actual moves:\n',scrambledstring);
             let result = simplifyMoves(scrambledstring);
-            //console.log('simplified movecount:',result.moveCount);
-            //console.log('simplified moves:\n',result.moves);
             if (result.movecount > 22) {
                 depth = 22;
             } else {
                 depth = result.moveCount;
             }
-            //console.log('maxdepth',depth);
             if (isCubeSolved()) {
                 if (!scene.classList.contains('levitate')) {
                     if (moves.childElementCount === 0 && result.movecount > 0) {
                         moves.innerHTML = "solved the cube in " + result.movecount + " moves!";
-                        console.log('cube solved');
                     }
                     movecount = 0;
                     scene.classList.add('levitate');
@@ -273,6 +266,11 @@ function rollback() {
         backing = true;
         animateRotation(facerotated.pop(), !direction.pop(), Date.now());
         backing = false;
+        setTimeout(() => {
+            if (solveit) {
+                rollback();
+            }
+        }, 400);
     }
 }
 
@@ -310,8 +308,8 @@ function findpresent() {
             }
         }
     }
-    //console.log(present);
 }
+
 function printCubeState() {
     for (let i = 0; i < 6; i++) {
         let temp = document.querySelector(`.${colors[i][0]}lyr`);
@@ -339,8 +337,7 @@ function mix() {
         count = 0;
         youcan = true;
         changeclicking();
-        console.log('scrambled:',scrambledstring);
-        scrambledstring='';
+        scrambledstring = '';
     }
 }
 
@@ -364,7 +361,6 @@ function getcolor(i) {
     }
 }
 
-//layer solving code started here
 function solvecross() {
     let num = 0, num1 = 0, num2 = 0, num3 = 0, num4 = 0;
     let child1 = document.querySelector(`#piece${yellowedges[pi]}`);
@@ -397,14 +393,17 @@ function solvecross() {
     }
     if (num === 4) {
         executeformula("r u r' u r u u r'", "edges");
+        return;
     } else if (num === 2 || num === 0) {
         if ((num1 === 1 && num2 === 1) || (num3 === 1 && num4 === 1) || (num1 === 1 && num3 === 1)) {
             rotateCube('ArrowLeft');
             setTimeout(() => {
                 processChar(0, "f r u r' u' f'", "plus");
+                return;
             }, 400);
         } else {
             processChar(0, "f r u r' u' f'", "plus");
+            return;
         }
     }
 }
@@ -437,11 +436,13 @@ function edgessolved() {
     }
     if (num === 3) {
         executeformula("u r u' l' u r' u' l", "corners");
+        return;
     } else if (num === 2 || num === 0) {
         animateRotation(3, true, Date.now());
-        setTimeout(() => edgessolved(), 400);
+        setTimeout(() => { edgessolved(); return; }, 400);
     } else if (num === 1) {
         processChar(0, "r u r' u r u u r'", "edges");
+        return;
     }
 }
 
@@ -550,100 +551,101 @@ function secondlayer() {
         }
     }
     if (pieceleft === leftcolor && pieceright === frontcolor) {
-        //console.log('this is already solved,moving on');
         if (midsolved()) {
-
             moves.innerHTML = 'solving third layer';
-            console.log('second layer solved');
-            console.log('solving third layer');
-            
             executeformula("f r u r' u' f'", "plus");
-
-            //youcan=true;
-            //changeclicking();
-
+            return;
         } else {
             rotateCube('ArrowLeft');
-            setTimeout(secondlayer, 400);
+            setTimeout(() => {
+                secondlayer();
+                return;
+            }, 400);
         }
     } else if (pieceleft === frontcolor && pieceright === leftcolor) {
-        //console.log('this is flipped');
-        animateRotation(3, true, Date.now());
-        executeformula("u f u' f' u' l' u l", "midleft");
-        setTimeout(() => {
-            animateRotation(3, true, Date.now());
-            setTimeout(() => {
-                animateRotation(3, true, Date.now());
-                setTimeout(() => {
-                    executeformula("u f u' f' u' l' u l", "midleft");
-                }, 400);
-            }, 400);
-        }, 6400);
+        executeformula("u f u' f' u' l' u l u' f u' f' u' l' u l", "secondlayer");
+        return;
     } else if (pieceleft === topcolor || pieceright === topcolor) {
         if (leftpiecetop === frontcolor && leftpiecebottom === leftcolor) {
-            executeformula("u f u' f' u' l' u l", "midleft");
+            executeformula("u f u' f' u' l' u l", "secondlayer");
+            return;
         } else if (leftpiecetop === leftcolor && leftpiecebottom === frontcolor) {
             animateRotation(3, false, Date.now());
             setTimeout(() => {
-                executeformula("u' l' u l u f u' f'", "midright");
+                executeformula("u' l' u l u f u' f'", "secondlayer");
+                return;
             }, 400);
         } else if (frontpiecetop === leftcolor && frontpiecebottom === frontcolor) {
-            executeformula("u' l' u l u f u' f'", "midright");
+            executeformula("u' l' u l u f u' f'", "secondlayer");
+            return;
         } else if (frontpiecetop === frontcolor && frontpiecebottom === leftcolor) {
             animateRotation(3, true, Date.now());
             setTimeout(() => {
-                executeformula("u f u' f' u' l' u l", "midleft");
+                executeformula("u f u' f' u' l' u l", "secondlayer");
+                return;
             }, 400);
         } else if (rightpiecetop === leftcolor && rightpiecebottom === frontcolor) {
             animateRotation(3, true, Date.now());
             setTimeout(() => {
-                executeformula("u' l' u l u f u' f'", "midright");
+                executeformula("u' l' u l u f u' f'", "secondlayer");
+                return;
             }, 400);
         } else if (rightpiecetop === frontcolor && rightpiecebottom === leftcolor) {
             animateRotation(3, true, Date.now());
             setTimeout(() => {
                 animateRotation(3, true, Date.now());
                 setTimeout(() => {
-                    executeformula("u f u' f' u' l' u l", "midleft");
+                    executeformula("u f u' f' u' l' u l", "secondlayer");
+                    return;
                 }, 400);
             }, 400);
         } else if (backpiecetop === frontcolor && backpiecebottom === leftcolor) {
             animateRotation(3, false, Date.now());
             setTimeout(() => {
-                executeformula("u f u' f' u' l' u l", "midleft");
+                executeformula("u f u' f' u' l' u l", "secondlayer");
+                return;
             }, 400);
         } else if (backpiecetop === leftcolor && backpiecebottom === frontcolor) {
             animateRotation(3, true, Date.now());
             setTimeout(() => {
                 animateRotation(3, true, Date.now());
                 setTimeout(() => {
-                    executeformula("u' l' u l u f u' f'", "midright");
+                    executeformula("u' l' u l u f u' f'", "secondlayer");
+                    return;
                 }, 400);
             }, 400);
         } else {
-            //console.log('didnt find the required piece,so moving on');
             rotateCube('ArrowLeft');
-            setTimeout(secondlayer, 400);
+            setTimeout(() => {
+                secondlayer();
+                return;
+            }, 400);
         }
     } else {
-        //console.log('this is a non yellow piece,so taking it out');
         if (leftpiecetop === topcolor || leftpiecebottom === topcolor) {
-            executeformula("u f u' f' u' l' u l", "midleft");
+            executeformula("u f u' f' u' l' u l", "secondlayer");
+            return;
         } else if (frontpiecetop === topcolor || frontpiecebottom === topcolor) {
-            executeformula("u' l' u l u f u' f'", "midright");
+            executeformula("u' l' u l u f u' f'", "secondlayer");
+            return;
         } else if (rightpiecetop === topcolor || rightpiecebottom === topcolor) {
             animateRotation(3, true, Date.now());
             setTimeout(() => {
-                executeformula("u' l' u l u f u' f'", "midright");
+                executeformula("u' l' u l u f u' f'", "secondlayer");
+                return;
             }, 400);
         } else if (backpiecetop === topcolor || backpiecebottom === topcolor) {
             animateRotation(3, false, Date.now());
             setTimeout(() => {
-                executeformula("u f u' f' u' l' u l", "midleft");
+                executeformula("u f u' f' u' l' u l", "secondlayer");
+                return;
             }, 400);
         } else {
             rotateCube('ArrowLeft');
-            setTimeout(secondlayer, 400);
+            setTimeout(() => {
+                secondlayer();
+                return;
+            }, 400);
         }
     }
 }
@@ -672,20 +674,19 @@ function firstcornerssolved() {
     return true;
 }
 
-let checkedpices = 0;//check this once
+let checkedpices = 0;
 
 function firstcorners() {
     if (firstcornerssolved()) {
         if (!isCubeSolved()) {
             rotateCube('ArrowDown');
-            console.log('first layer solved');
-            console.log('solving second layer');
             moves.innerHTML = 'solving second layer';
-            setTimeout(secondlayer, 400);
+            setTimeout(() => {
+                secondlayer();
+                return;
+            }, 400);
         } else {
-            console.log('first layer solved');
-            console.log('cube is solved');
-            youcan=true;
+            youcan = true;
             changeclicking();
         }
     } else {
@@ -719,19 +720,22 @@ function firstcorners() {
         if (piecetop === downcolor || piecefront === downcolor || pieceleft === downcolor) {
             if (opppiecedown === topcolor && opppieceleft === frontcolor && opppiecefront === leftcolor) {
                 processChar(0, "f' d f l d d l'", "firstcorners");
+                return;
             } else if (opppiecedown === leftcolor && opppieceleft === topcolor && opppiecefront === frontcolor) {
                 processChar(0, "l d l'", "firstcorners");
+                return;
             } else if (opppiecedown === frontcolor && opppieceleft === leftcolor && opppiecefront === topcolor) {
                 processChar(0, "f' d' f", "firstcorners");
+                return;
             } else {
                 checkedpices++;
                 if (checkedpices < 5) {
                     animateRotation(3, true, Date.now());
-                    setTimeout(() => firstcorners(), 400);
+                    setTimeout(() => { firstcorners(); return; }, 400);
                 } else {
                     checkedpices = 0;
                     rotateCube('ArrowLeft');
-                    setTimeout(firstcorners, 400);
+                    setTimeout(() => { firstcorners(); return; }, 400);
                 }
             }
         } else {
@@ -739,26 +743,21 @@ function firstcorners() {
                 if (firstcornerssolved()) {
                     if (!isCubeSolved()) {
                         rotateCube('ArrowDown');
-                        console.log('first layer solved');
-                        console.log('solving second layer');
                         moves.innerHTML = 'solving second layer';
-                        setTimeout(secondlayer, 400);
-                    } else {
-                        console.log('first layer solved');
-                        youcan=true;
-                        changeclicking();
+                        setTimeout(() => { secondlayer(); return; }, 400);
                     }
                 } else {
                     rotateCube('ArrowLeft');
-                    setTimeout(firstcorners, 400);
+                    setTimeout(() => { firstcorners(); return; }, 400);
                 }
             } else {
                 if (opppiecedown === downcolor || opppieceleft === downcolor || opppiecefront === downcolor) {
                     checkedpices = 0;
                     processChar(0, "d' f' d f", "firstcorners");
+                    return;
                 } else {
                     animateRotation(3, true, Date.now());
-                    setTimeout(() => firstcorners(), 400);
+                    setTimeout(() => { firstcorners(); return; }, 400);
                 }
             }
         }
@@ -770,6 +769,7 @@ let rotationcount = 0;
 function firstedges() {
     if (isfirstedgessolved()) {
         firstcorners();
+        return;
     } else {
         let child1 = document.querySelector(`#piece${whiteedges[pi]}`);
         let child2 = document.querySelector(`#piece${midedges[(pi + 1) % 4]}`);
@@ -814,102 +814,129 @@ function firstedges() {
         }
         if (piecetop === topcolor || piecefront === topcolor || rightpiecefront === topcolor || rightpieceright === topcolor || leftpieceleft === topcolor || leftpiecefront === topcolor || downpiecebottom === topcolor || downpiecefront === topcolor) {
             if (rotationcount === 0) {
-                console.log(piecetop, piecefront);
                 if (piecetop === topcolor && piecefront === frontcolor) {
-                    console.log('piece solved');
                     if (rightpiecefront === topcolor || rightpieceright === topcolor || leftpieceleft === topcolor || leftpiecefront === topcolor || downpiecebottom === topcolor || downpiecefront === topcolor) {
                         processChar(0, "", "firstedges");
+                        return;
                     } else {
-                        rotateCube("ArrowLeft");
-                        setTimeout(() => {
-                            processChar(0, "", "firstedges");
-                        }, 400);
+                        rotationcount = 3;
+                        processChar(0, "", "firstedges");
+                        return;
                     }
                 } else if (piecetop === frontcolor && piecefront === topcolor) {
-                    console.log('flipped piece');
                     processChar(0, "f' u l' u'", "firstedges");
+                    return;
                 } else if (piecetop === topcolor || piecefront === topcolor) {
                     if (rightpiecefront !== topcolor && rightpieceright !== topcolor) {
                         processChar(0, "f", "firstedges");
+                        return;
                     } else if (leftpieceleft !== topcolor && leftpiecefront !== topcolor) {
                         processChar(0, "f", "firstedges");
+                        return;
                     } else if (downpiecebottom !== topcolor && downpiecefront !== topcolor) {
                         processChar(0, "f f", "firstedges");
+                        return;
                     } else {
-                        rotateCube("ArrowLeft");
-                        setTimeout(() => {
-                            processChar(0, "", "firstedges");
-                        }, 400);
+                        rotationcount = 3;
+                        processChar(0, "", "firstedges");
+                        return;
                     }
                 } else {
                     processChar(0, "", "firstedges");
+                    return;
                 }
             } else if (rotationcount === 1) {
-                if (downpiecebottom === topcolor && downpiecefront === frontcolor) {//bottom piece bottoms
+                if (downpiecebottom === topcolor && downpiecefront === frontcolor) {
                     processChar(0, "f f", "firstedges");
+                    return;
                 } else if (downpiecebottom === topcolor && downpiecefront === rightcolor) {
                     processChar(0, "u f f u'", "firstedges");
+                    return;
                 } else if (downpiecebottom === topcolor && downpiecefront === backcolor) {
                     processChar(0, "u u f f u u", "firstedges");
+                    return;
                 } else if (downpiecebottom === topcolor && downpiecefront === leftcolor) {
                     processChar(0, "u' f f u", "firstedges");
-                } else if (downpiecebottom === frontcolor && downpiecefront === topcolor) {//bottom piece fronts
+                    return;
+                } else if (downpiecebottom === frontcolor && downpiecefront === topcolor) {
                     processChar(0, "f' u' r u", "firstedges");
+                    return;
                 } else if (downpiecebottom === rightcolor && downpiecefront === topcolor) {
                     processChar(0, "f' r f", "firstedges");
+                    return;
                 } else if (downpiecebottom === backcolor && downpiecefront === topcolor) {
                     processChar(0, "f' u r u' f", "firstedges");
+                    return;
                 } else if (downpiecebottom === leftcolor && downpiecefront === topcolor) {
                     processChar(0, "f l' f'", "firstedges");
+                    return;
                 } else {
                     processChar(0, "", "firstedges");
+                    return;
                 }
             } else if (rotationcount === 2) {
-                if (rightpieceright === topcolor && rightpiecefront === frontcolor) {//right piece right
+                if (rightpieceright === topcolor && rightpiecefront === frontcolor) {
                     processChar(0, "ff", "firstedges");
+                    return;
                 } else if (rightpieceright === topcolor && rightpiecefront === rightcolor) {
                     processChar(0, "u f' u'", "firstedges");
+                    return;
                 } else if (rightpieceright === topcolor && rightpiecefront === backcolor) {
                     processChar(0, "u u f' u u", "firstedges");
+                    return;
                 } else if (rightpieceright === topcolor && rightpiecefront === leftcolor) {
                     processChar(0, "u' f' u", "firstedges");
-                } else if (rightpieceright === frontcolor && rightpiecefront === topcolor) {//right piece fronts
+                    return;
+                } else if (rightpieceright === frontcolor && rightpiecefront === topcolor) {
                     processChar(0, "u' r u", "firstedges");
+                    return;
                 } else if (rightpieceright === rightcolor && rightpiecefront === topcolor) {
                     processChar(0, "r", "firstedges");
+                    return;
                 } else if (rightpieceright === backcolor && rightpiecefront === topcolor) {
                     processChar(0, "u r u'", "firstedges");
+                    return;
                 } else if (rightpieceright === leftcolor && rightpiecefront === topcolor) {
                     processChar(0, "u u r u u", "firstedges");
+                    return;
                 } else {
                     processChar(0, "", "firstedges");
+                    return;
                 }
             } else if (rotationcount === 3) {
-                if (leftpieceleft === topcolor && leftpiecefront === frontcolor) {//left piece lefts
+                if (leftpieceleft === topcolor && leftpiecefront === frontcolor) {
                     processChar(0, "f", "firstedges");
+                    return;
                 } else if (leftpieceleft === topcolor && leftpiecefront === rightcolor) {
                     processChar(0, "u f u'", "firstedges");
+                    return;
                 } else if (leftpieceleft === topcolor && leftpiecefront === backcolor) {
                     processChar(0, "u u f u u", "firstedges");
+                    return;
                 } else if (leftpieceleft === topcolor && leftpiecefront === leftcolor) {
                     processChar(0, "u' f u", "firstedges");
-                } else if (leftpieceleft === frontcolor && leftpiecefront === topcolor) {//left piece fronts
+                    return;
+                } else if (leftpieceleft === frontcolor && leftpiecefront === topcolor) {
                     processChar(0, "u l' u'", "firstedges");
+                    return;
                 } else if (leftpieceleft === rightcolor && leftpiecefront === topcolor) {
                     processChar(0, "u u l' u u", "firstedges");
+                    return;
                 } else if (leftpieceleft === backcolor && leftpiecefront === topcolor) {
                     processChar(0, "u' l' u", "firstedges");
+                    return;
                 } else if (leftpieceleft === leftcolor && leftpiecefront === topcolor) {
                     processChar(0, "l", "firstedges");
+                    return;
                 } else {
                     processChar(0, "", "firstedges");
+                    return;
                 }
             }
         } else {
-            rotateCube("ArrowLeft");
-            setTimeout(() => {
-                processChar(0, "", "firstedges");
-            }, 400);
+            rotationcount = 3;
+            processChar(0, "", "firstedges");
+            return;
         }
     }
 }
@@ -933,7 +960,7 @@ function lastrotate() {
         animateRotation(3, true, Date.now());
         setTimeout(lastrotate, 400);
     } else {
-        youcan=true;
+        youcan = true;
         changeclicking();
     }
 }
@@ -943,12 +970,17 @@ function processChar(index, formula, purpose) {
         if (purpose === "final") {
             if (!frcSolved(yellowcorners[pi])) {
                 processChar(0, formula, purpose);
+                return;
             } else {
                 if (!(frcSolved(yellowcorners[0]) && frcSolved(yellowcorners[1]) && frcSolved(yellowcorners[2]) && frcSolved(yellowcorners[3]))) {
                     animateRotation(3, true, Date.now());
-                    setTimeout(() => executeformula("r' d r d' r' d r d'", "final"), 400);
+                    setTimeout(() => {
+                        executeformula("r' d r d' r' d r d'", "final")
+                        return;
+                    }, 400);
                 } else {
                     lastrotate();
+                    return;
                 }
             }
         } else if (purpose === "corners") {
@@ -959,9 +991,11 @@ function processChar(index, formula, purpose) {
                         rotateCube('ArrowRight');
                         setTimeout(() => {
                             processChar(0, formula, purpose);
+                            return;
                         }, 400);
                     } else {
                         executeformula("r' d r d' r' d r d'", "final");
+                        return;
                     }
                 }, 400);
             } else {
@@ -974,32 +1008,40 @@ function processChar(index, formula, purpose) {
                                 rotateCube('ArrowLeft');
                                 setTimeout(() => {
                                     processChar(0, formula, purpose);
+                                    return;
                                 }, 400)
                             } else {
                                 processChar(0, formula, purpose);
+                                return;
                             }
                         }, 400);
                     } else {
                         processChar(0, formula, purpose);
+                        return;
                     }
                 }, 400);
             }
         } else if (purpose === "edges") {
             edgessolved();
+            return;
         } else if (purpose === "plus") {
             solvecross();
-        } else if (purpose === "midleft" || purpose === "midright") {
+            return;
+        } else if (purpose === "secondlayer") {
             secondlayer();
+            return;
         } else if (purpose === "firstcorners") {
             firstcorners();
+            return;
         } else if (purpose === "firstedges") {
             rotationcount++;
             if (rotationcount === 4) {
                 rotationcount = 0;
                 rotateCube("ArrowLeft");
-                setTimeout(firstedges, 400);
+                setTimeout(() => { firstedges(); return; }, 400);
             } else {
                 firstedges();
+                return;
             }
         } else {
             youcan = true;
@@ -1015,7 +1057,10 @@ function processChar(index, formula, purpose) {
             animateRotation(colors.indexOf(getcolor(formula[index])), true, Date.now());
         }
     }
-    setTimeout(() => processChar(index + 1, formula, purpose), 400);
+    setTimeout(() => {
+        processChar(index + 1, formula, purpose)
+        return;
+    }, 400);
 }
 
 function executeformula(formula, purpose) {
@@ -1024,12 +1069,17 @@ function executeformula(formula, purpose) {
     if (purpose === "final") {
         if (!frcSolved(yellowcorners[pi])) {
             processChar(0, formula, purpose);
+            return;
         } else {
             if (!(frcSolved(yellowcorners[0]) && frcSolved(yellowcorners[1]) && frcSolved(yellowcorners[2]) && frcSolved(yellowcorners[3]))) {
                 animateRotation(3, true, Date.now());
-                setTimeout(() => executeformula("r' d r d' r' d r d'", "final"), 400);
+                setTimeout(() => {
+                    executeformula("r' d r d' r' d r d'", "final");
+                    return;
+                }, 400);
             } else {
                 lastrotate();
+                return;
             }
         }
     } else if (purpose === "corners") {
@@ -1040,9 +1090,11 @@ function executeformula(formula, purpose) {
                     rotateCube('ArrowRight');
                     setTimeout(() => {
                         processChar(0, formula, purpose);
+                        return;
                     }, 400);
                 } else {
                     executeformula("r' d r d' r' d r d'", "final");
+                    return;
                 }
             }, 400);
         } else {
@@ -1055,22 +1107,28 @@ function executeformula(formula, purpose) {
                             rotateCube('ArrowLeft');
                             setTimeout(() => {
                                 processChar(0, formula, purpose);
+                                return;
                             }, 400)
                         } else {
                             processChar(0, formula, purpose);
+                            return;
                         }
                     }, 400);
                 } else {
                     processChar(0, formula, purpose);
+                    return;
                 }
             }, 400);
         }
     } else if (purpose === "edges") {
         edgessolved();
+        return;
     } else if (purpose === "plus") {
         solvecross();
+        return;
     } else {
         processChar(0, formula, purpose);
+        return;
     }
 }
 function getchar(i) {
@@ -1127,7 +1185,7 @@ function debug(solution) {
     moves.appendChild(spanp);
     moves.style.minHeight = '60px';
     moves.style.maxHeight = '60px';
-    
+
     processChar(0, ans, "solution");
 }
 function position() {
@@ -1164,18 +1222,12 @@ function stopClock() {
 async function solveCube(cubeState) {
     try {
         await Cube.initSolver();
-        let cube = Cube.fromString(cubeState); // Create cube from state
-        console.log('solver initialised:');
-        console.log(cube.asString());
+        let cube = Cube.fromString(cubeState); 
         let solution;
         try {
             solution = cube.solve();
-            console.log('after solving with:');
-            console.log(solution);
             cube.move(solution);
-            console.log('cube state:');
-            console.log(cube.asString());
-            if (isValidCubeState(cubeState)&&cube.asString() === "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB") {
+            if (isValidCubeState(cubeState) && cube.asString() === "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB") {
                 return solution;
             } else {
                 moves.innerHTML = 'Invalid cube';
@@ -1197,11 +1249,9 @@ async function solveCube(cubeState) {
     }
 }
 
-solveCube("UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB");
-
 function isValidCubeState(cubeState) {
     if (typeof cubeState !== "string" || cubeState.length !== 54) {
-        return false; 
+        return false;
     }
 
     let counts = { U: 0, R: 0, F: 0, D: 0, L: 0, B: 0 };
@@ -1226,7 +1276,7 @@ function simplifyMoves(moves) {
             let prevMove = moveStack.pop();
             let prevCount = prevMove.length > 1 ? (prevMove[1] === "2" ? 2 : -1) : 1;
 
-            let newCount = ((prevCount + count) % 4 + 4) % 4; // Normalize to range 0-3
+            let newCount = ((prevCount + count) % 4 + 4) % 4;
 
             if (newCount === 1) moveStack.push(baseMove);
             else if (newCount === 2) moveStack.push(baseMove + "2");
@@ -1265,7 +1315,6 @@ document.addEventListener("keydown", (event) => {
                 movecount = 0;
                 youcan = false;
                 changeclicking();
-                console.log('solving first layer');
                 if (width > 840 || height < 430) { moves.style.bottom = '-67px'; }
                 moves.innerHTML = 'solving first layer';
                 stopClock();
@@ -1327,7 +1376,6 @@ document.querySelector('.solve').addEventListener('click', () => {
         startClock();
         youcan = false;
         changeclicking();
-        console.log('solving first layer');
         if (width > 840 || height < 430) { moves.style.bottom = '-67px'; }
         moves.innerHTML = 'solving first layer';
         if (topcolor === 'yellow') {
@@ -1343,13 +1391,13 @@ document.querySelector('.fast').addEventListener('click', async () => {
     position();
     youcan = false;
     changeclicking();
-    
-    let solution = await solveCube(present);//sending state
+
+    let solution = await solveCube(present);
     clockSeconds = 0;
     updateClock();
     clockRunning = false;
     startClock();
-    
+
     debug(solution);
 });
 
@@ -1361,8 +1409,22 @@ document.querySelector('.scramble').addEventListener('click', () => {
     mix();
 });
 
-document.querySelector('.srev').addEventListener('click', () => {
+document.querySelector('.srev').addEventListener('mousedown', () => {
+    solveit = true;
     rollback();
+});
+
+document.querySelector('.srev').addEventListener('touchstart', () => {
+    solveit = true;
+    rollback();
+});
+
+document.querySelector('.srev').addEventListener('mouseup', () => {
+    solveit = false;
+});
+
+document.querySelector('.srev').addEventListener('touchend', () => {
+    solveit = false;
 });
 
 document.querySelector('.superflip').addEventListener('click', () => {
@@ -1422,7 +1484,7 @@ document.querySelector('.inputclr').addEventListener('click', () => {
 
 document.querySelector('.done').addEventListener('click', async () => {
 
-    let solution = await solveCube(present);//sending state
+    let solution = await solveCube(present);
     if (solution) {
         buttons.forEach(button => { button.style.display = 'none' });
         setTimeout(() => {

@@ -259,7 +259,6 @@ button i {
     box-shadow: none;
 }
 
-/* Click Effect */
 button:active {
     transform: scale(0.95);
     box-shadow: inset -4px 0 4px rgba(0, 0, 0, 0.15),
@@ -587,7 +586,6 @@ button:active {
     }
 
     .graph {
-        /*top:77vh;*/
         zoom: 0.65;
     }
 }
@@ -601,6 +599,9 @@ button:active {
 @media(max-width:500px) {
     .graph {
         left: 10px;
+    }
+    .fast,.inputclr,.layer{
+        display: none;
     }
 }
 
@@ -644,5 +645,9 @@ button:active {
 
     #moves {
         zoom:0.75;
+    }
+
+    .fast,.inputclr,.layer{
+        display: none;
     }
 }
