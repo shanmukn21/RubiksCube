@@ -1,4 +1,3 @@
-
 * {
     margin: 0;
     padding: 0;
@@ -169,7 +168,7 @@ body {
 
 .cubeb,
 .sideb {
-    position:relative;
+    position: relative;
     width: 33.33%;
     display: flex;
     flex-direction: column;
@@ -201,9 +200,9 @@ body {
     padding: 2px 10px 10px 2px;
 }
 
-.separate{
+.separate {
     display: flex;
-    gap:4px;
+    gap: 4px;
 }
 
 button {
@@ -276,6 +275,8 @@ button:active {
     cursor: pointer;
     user-select: none;
     color: white;
+    right: 80px;
+    top: 35px;
 }
 
 @keyframes rgbColor {
@@ -421,12 +422,11 @@ button:active {
     zoom: 1.25;
     top: 23px;
     right: 23px;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     padding: 2.5px;
 }
-
 .graph {
     position: absolute;
     top: 10px;
@@ -463,8 +463,8 @@ button:active {
     margin-right: 100px;
 }
 
-#moves{
-    order:2;
+#moves {
+    order: 2;
     font-size: 10px;
     font-weight: bold;
     color: white;
@@ -472,45 +472,67 @@ button:active {
     max-height: 0px;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     position: absolute;
     bottom: -67px;
 }
+
 #moves div {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
 }
-#moves div span{
+
+#moves div span {
     padding: 2px;
 }
-.input-container{
+
+#algorithm{
+    display: none;
+    height: 20px;
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+
+.input-container {
     display: none;
     flex-wrap: wrap;
     max-width: 150px;
     justify-content: center;
-    gap:20px;
+    gap: 20px;
 }
-.input-container div{
+
+.input-container div {
     min-width: 25px;
     min-height: 25px;
     border-radius: 4px;
     cursor: pointer;
 }
-.input-container div:hover{
+
+.input-container div:hover {
     min-width: 27px;
     min-height: 27px;
     max-height: 27px;
     margin: -1px;
 }
-.input-container div:active{
+
+.input-container div:active {
     min-width: 23px;
     min-height: 23px;
     max-height: 23px;
     margin: 1px;
 }
-.done{display: none;}
-.layer,.kociemba{
+
+.done {
+    display: none;
+}
+
+.sub {
     font-size: 24px;
 }
+
 @media(min-width:1380px) {
     .graph {
         zoom: 0.9;
@@ -522,7 +544,8 @@ button:active {
         zoom: 1.8;
         height: 56vh;
     }
-    .graph{
+
+    .graph {
         left: 3.5%;
     }
 }
@@ -549,19 +572,13 @@ button:active {
 }
 
 @media (max-width: 840px) and (min-height: 430px) {
-    #fullscreenBtn {
-        display: flex;
-    }
+
     #moves {
         position: relative;
-        zoom:0.65;
+        zoom: 0.65;
         order: 0;
         bottom: 10px;
         font-size: 16px;
-    }
-    .clock {
-        right: 80px;
-        top: 35px;
     }
 
     body {
@@ -635,22 +652,12 @@ button:active {
     }
 }
 
-@media(max-height:632px) {
-    #fullscreenBtn {
-        display: flex;
-    }
-    .clock {
-        right: 80px;
-        top: 35px;
-    }
-}
-
-@media(max-height:500px) {    
+@media(max-height:500px) {
     .graph {
         zoom: 0.75;
     }
 
     #moves {
-        zoom:0.75;
+        zoom: 0.75;
     }
 }

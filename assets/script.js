@@ -42,10 +42,10 @@ var colors = ['green', 'blue', 'white', 'yellow', 'orange', 'red'],
     arrows = document.querySelector('.arrows'),
     combined = document.getElementById('combined'),
     scene = document.querySelector('.scene'),
-    rotateface = true, backing = false, solveit = false, youcan = true,
+    rotateface = true, backing = false, solveit = false, youcan = true, hidesolution = false,
     facerotated = [], direction = [],
     state = Array(6).fill().map(() => Array(3).fill().map(() => Array(3))),
-    depth = 22, movecount = 0, rotateX = -35, rotateY = 45, count = 0, pi = 0, topcolor = 'white', leftcolor = 'green', frontcolor = 'red', downcolor = 'yellow', rightcolor = 'blue', backcolor = 'orange';
+    movecount = 0, rotateX = -35, rotateY = 45, count = 0, pi = 0, topcolor = 'white', leftcolor = 'green', frontcolor = 'red', downcolor = 'yellow', rightcolor = 'blue', backcolor = 'orange';
 
 const idMap = [[
     [21, 5, 37],
@@ -155,6 +155,11 @@ function isCubeSolved() {
 let scrambledstring = "";
 
 function animateRotation(face, cw, currentTime) {
+    if (hidesolution) {
+        moves.innerHTML = "";
+        moves.style.minHeight = '0px';
+        moves.style.maxHeight = '0px';
+    }
     scrambledstring += getchar(colors[face]);
     if (!cw) {
         scrambledstring += "'";
@@ -190,11 +195,6 @@ function animateRotation(face, cw, currentTime) {
             rotateface = true;
             movecount++;
             let result = simplifyMoves(scrambledstring);
-            if (result.movecount > 22) {
-                depth = 22;
-            } else {
-                depth = result.moveCount;
-            }
             if (isCubeSolved()) {
                 if (!scene.classList.contains('levitate')) {
                     if (moves.childElementCount === 0 && result.movecount > 0) {
@@ -338,7 +338,6 @@ function mix() {
         count = 0;
         youcan = true;
         changeclicking();
-        scrambledstring = '';
         printCubeState();
     }
 }
@@ -1143,6 +1142,7 @@ function getchar(i) {
         case 'orange': return 'L';
     }
 }
+
 function charget(i) {
     switch (i) {
         case 'B': return 'r';
@@ -1155,7 +1155,7 @@ function charget(i) {
 }
 
 function debug(solution) {
-    scrambledstring = '';
+    scrambledstring = "";
     let ans = '';
     let movcnt = 0;
     let timcnt = 0
@@ -1223,6 +1223,44 @@ function stopClock() {
     clearInterval(clockInterval);
 }
 
+function countMoves(str) {
+    let count = 0;
+    const moves = new Set(['R', 'L', 'U', 'D', 'B', 'F']);
+    for (let char of str) {
+        if (moves.has(char)) {
+            count++;
+        }
+    }
+    return count;
+}
+
+function reverseRubiksAlgorithm() {
+    let input = scrambledstring;
+    if (!input) return "";
+    let moves = input.split(/\s+/);
+    let reversedMoves = moves.reverse().map(move => {
+        if (move.endsWith("2")) return move;
+        if (move.endsWith("'")) return move.slice(0, -1);
+        return move + "'";
+    });
+
+    let reversedAlgorithm = reversedMoves.join(" ");
+    reversedAlgorithm = reversedAlgorithm.replace(/^'\s*/, '');
+    return reversedAlgorithm;
+}
+
+function isValidRubiksAlgorithm(input) {
+    input = input.trim().toUpperCase();
+    let regex = /^([FBUDLR]2?'?\s?)+$/;
+    return regex.test(input);
+}
+
+function formatRubiksAlgorithm(input) {
+    input = input.trim().toUpperCase();
+    input = input.replace(/([FBUDLR])('?2?)(?=[FBUDLR])/g, "$1$2 ").replace(/\s+/g, ' ');
+    return input;
+}
+
 function simplifyMoves(moves) {
     const moveList = moves.trim().split(/\s+/);
     const moveStack = [];
@@ -1270,7 +1308,6 @@ document.addEventListener("keydown", (event) => {
             case 'B': animateRotation(1, false, Date.now()); break;
             case 'm': mix(); break;
             case '-': rollback(); break;
-            case '*': if (scene.classList.contains('levitate')) { executeformula("r l u u f  u' d f f r r b b l u u f' b' u r r d f f u r r u", "superflip"); } break;
             case '=': if (!scene.classList.contains('levitate')) {
                 movecount = 0;
                 youcan = false;
@@ -1363,6 +1400,7 @@ document.querySelector('.fast').addEventListener('click', async () => {
         updateClock();
         clockRunning = false;
         startClock();
+        hidesolution = false;
         debug(solution);
     }
 });
@@ -1393,10 +1431,6 @@ document.querySelector('.srev').addEventListener('touchend', () => {
     solveit = false;
 });
 
-document.querySelector('.superflip').addEventListener('click', () => {
-    if (scene.classList.contains('levitate')) { executeformula("r l u u f  u' d f f r r b b l u u f' b' u r r d f f u r r u", "superflip"); }
-});
-
 clockElement.addEventListener("click", () => {
     if (clockRunning) {
         stopClock();
@@ -1414,6 +1448,10 @@ clockElement.addEventListener("dblclick", () => {
 });
 
 document.querySelector('.inputclr').addEventListener('click', () => {
+    moves.innerHTML = '';
+    scrambledstring = '';
+    facerotated.length = 0;
+    direction.length = 0;
     buttons.forEach(button => { button.style.display = 'none' });
     setTimeout(() => {
         buttons.forEach(button => { button.style.display = 'inline-block' });
@@ -1432,7 +1470,7 @@ document.querySelector('.inputclr').addEventListener('click', () => {
         for (let j = 0; j < 6; j++) {
             if (parent.children[i].children[j].childElementCount > 0) {
                 let temp = parent.children[i].children[j].children[0];
-                temp.classList.remove(temp.classList[1]);
+                //temp.classList.remove(temp.classList[1]);
                 temp.addEventListener('click', () => {
                     if (caninput && inputcolor) {
                         if (temp.classList.length > 1) {
@@ -1449,15 +1487,42 @@ document.querySelector('.inputclr').addEventListener('click', () => {
 });
 
 document.querySelector('.done').addEventListener('click', async () => {
-    printCubeState();
+    position();
 
-    let solution;
-    if (present === 'UBULURUFURURFRBRDRFUFLFRFDFDFDLDRDBDLULBLFLDLBUBRBLBDB') {
-        solution = "B F U2 R U' D R2 B2 L2 F U2 R' L' U B2 D R2 U B2 U";
+    let nowhide = false;
+
+    if (frommoves) {
+        let usermoves = document.getElementById('algorithm').value;
+        if (isValidRubiksAlgorithm(usermoves)) {
+            document.getElementById('algorithm').style.display = 'none';
+            youcan = false;
+            changeclicking();
+            frommoves = false;
+            nowhide = true;
+            hidesolution = true;
+            debug(simplifyMoves(formatRubiksAlgorithm(usermoves)).moves);
+        } else {
+            moves.innerHTML = "Invalid Moves";
+            setTimeout(() => { moves.innerHTML = '' }, 2000);
+        }
     } else {
-        solution = min2phase.solve(present);
+        printCubeState();
+        let solution;
+        if (present === 'UBULURUFURURFRBRDRFUFLFRFDFDFDLDRDBDLULBLFLDLBUBRBLBDB') {
+            solution = "B F U2 R U' D R2 B2 L2 F U2 R' L' U B2 D R2 U B2 U";
+        } else {
+            solution = min2phase.solve(present);
+        }
+
+        if (solution[0] !== 'E' || isCubeSolved()) {
+            nowhide = true;
+        } else {
+            moves.innerHTML = "Invalid Cube";
+            setTimeout(() => { moves.innerHTML = '' }, 2000);
+        }
     }
-    if (solution[0] !== 'E' || isCubeSolved()) {
+    if (nowhide) {
+        nowhide = false;
         buttons.forEach(button => { button.style.display = 'none' });
         setTimeout(() => {
             buttons.forEach(button => { button.style.display = 'inline-block' });
@@ -1466,9 +1531,28 @@ document.querySelector('.done').addEventListener('click', async () => {
         caninput = false;
         document.querySelector('.input-container').style.display = 'none';
         document.querySelectorAll('.inputhide').forEach(hider => { hider.style.display = 'flex' });
-    } else {
-        moves.innerHTML = "Invalid Cube";
-        setTimeout(() => { moves.innerHTML = '' }, 2000);
     }
 
+});
+
+let frommoves = false;
+
+document.querySelector('.inputmvs').addEventListener('click', () => {
+    frommoves = true;
+    if (isCubeSolved()) {
+        moves.innerHTML = '';
+        buttons.forEach(button => { button.style.display = 'none' });
+        setTimeout(() => {
+            buttons.forEach(button => { button.style.display = 'inline-block' });
+            document.querySelector('.srev').style.display = 'none';
+            document.querySelector('.solve').style.display = 'none';
+            document.querySelector('.fast').style.display = 'none';
+        }, 10);
+        if (scene.classList.contains('levitate')) {
+            scene.classList.remove('levitate');
+        }
+        document.querySelectorAll('.inputhide').forEach(hider => { hider.style.display = 'none' });
+        document.getElementById('algorithm').style.display = 'block';
+        youcan = false;
+    }
 });
