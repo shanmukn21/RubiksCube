@@ -493,9 +493,19 @@ button:active {
     min-width: 25px;
     min-height: 25px;
     border-radius: 4px;
+    cursor: pointer;
+}
+.input-container div:hover{
+    min-width: 27px;
+    min-height: 27px;
+    max-height: 27px;
+    margin: -1px;
 }
 .input-container div:active{
-    zoom:0.9;
+    min-width: 23px;
+    min-height: 23px;
+    max-height: 23px;
+    margin: 1px;
 }
 .done{display: none;}
 .layer,.kociemba{
@@ -600,9 +610,6 @@ button:active {
     .graph {
         left: 10px;
     }
-    .fast,.inputclr,.layer{
-        display: none;
-    }
 }
 
 @media(max-height:670px) and (max-width: 380px) {
@@ -645,9 +652,5 @@ button:active {
 
     #moves {
         zoom:0.75;
-    }
-
-    .fast,.inputclr,.layer{
-        display: none;
     }
 }

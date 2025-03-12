@@ -148,6 +148,7 @@ function isCubeSolved() {
             }
         }
     }
+    printCubeState();
     return true;
 }
 
@@ -338,6 +339,7 @@ function mix() {
         youcan = true;
         changeclicking();
         scrambledstring = '';
+        printCubeState();
     }
 }
 
@@ -1171,6 +1173,8 @@ function debug(solution) {
             if (solution[i + 1] === "2") {
                 temp.innerHTML = `${solution[i]}<sub>2</sub>`;
                 timcnt++;
+            } else if (solution[i + 1] === "'") {
+                temp.innerHTML = `${solution[i]}'`;
             } else {
                 temp.innerHTML = `${solution[i]}`;
             }
@@ -1217,50 +1221,6 @@ function startClock() {
 
 function stopClock() {
     clearInterval(clockInterval);
-}
-
-async function solveCube(cubeState) {
-    try {
-        await Cube.initSolver();
-        let cube = Cube.fromString(cubeState); 
-        let solution;
-        try {
-            solution = cube.solve();
-            cube.move(solution);
-            if (isValidCubeState(cubeState) && cube.asString() === "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB") {
-                return solution;
-            } else {
-                moves.innerHTML = 'Invalid cube';
-                setTimeout(() => {
-                    moves.innerHTML = '';
-                }, 3000);
-                return null;
-            }
-        } catch (error) {
-            console.error(error);
-            moves.innerHTML = 'Invalid cube';
-            setTimeout(() => {
-                moves.innerHTML = '';
-            }, 3000);
-            return null;
-        }
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-function isValidCubeState(cubeState) {
-    if (typeof cubeState !== "string" || cubeState.length !== 54) {
-        return false;
-    }
-
-    let counts = { U: 0, R: 0, F: 0, D: 0, L: 0, B: 0 };
-    for (let char of cubeState) {
-        if (!(char in counts)) return false;
-        counts[char]++;
-    }
-
-    return Object.values(counts).every(count => count === 9);
 }
 
 function simplifyMoves(moves) {
@@ -1388,17 +1348,23 @@ document.querySelector('.solve').addEventListener('click', () => {
 });
 
 document.querySelector('.fast').addEventListener('click', async () => {
-    position();
-    youcan = false;
-    changeclicking();
-
-    let solution = await solveCube(present);
-    clockSeconds = 0;
-    updateClock();
-    clockRunning = false;
-    startClock();
-
-    debug(solution);
+    if (!isCubeSolved) {
+        printCubeState();
+        position();
+        youcan = false;
+        changeclicking();
+        let solution;
+        if (present === 'UBULURUFURURFRBRDRFUFLFRFDFDFDLDRDBDLULBLFLDLBUBRBLBDB') {
+            solution = "B F U2 R U' D R2 B2 L2 F U2 R' L' U B2 D R2 U B2 U";
+        } else {
+            solution = min2phase.solve(present);
+        }
+        clockSeconds = 0;
+        updateClock();
+        clockRunning = false;
+        startClock();
+        debug(solution);
+    }
 });
 
 document.querySelector('.reset').addEventListener('click', () => {
@@ -1483,9 +1449,17 @@ document.querySelector('.inputclr').addEventListener('click', () => {
 });
 
 document.querySelector('.done').addEventListener('click', async () => {
+    printCubeState();
 
-    let solution = await solveCube(present);
-    if (solution) {
+    let solution;
+    if (present === 'UBULURUFURURFRBRDRFUFLFRFDFDFDLDRDBDLULBLFLDLBUBRBLBDB') {
+        solution = "B F U2 R U' D R2 B2 L2 F U2 R' L' U B2 D R2 U B2 U";
+    } else {
+        solution = min2phase.solve(present);
+        moves.innerHTML = solution;
+        setTimeout(() => { moves.innerHTML = '' }, 2000);
+    }
+    if (solution[0] !== 'E' || isCubeSolved()) {
         buttons.forEach(button => { button.style.display = 'none' });
         setTimeout(() => {
             buttons.forEach(button => { button.style.display = 'inline-block' });
@@ -1494,6 +1468,9 @@ document.querySelector('.done').addEventListener('click', async () => {
         caninput = false;
         document.querySelector('.input-container').style.display = 'none';
         document.querySelectorAll('.inputhide').forEach(hider => { hider.style.display = 'flex' });
+    } else {
+        moves.innerHTML = "Invalid Cube";
+        setTimeout(() => { moves.innerHTML = '' }, 2000);
     }
 
 });
