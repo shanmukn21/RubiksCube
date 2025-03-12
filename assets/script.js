@@ -1348,7 +1348,7 @@ document.querySelector('.solve').addEventListener('click', () => {
 });
 
 document.querySelector('.fast').addEventListener('click', async () => {
-    if (!isCubeSolved) {
+    if (!isCubeSolved()) {
         printCubeState();
         position();
         youcan = false;
@@ -1456,8 +1456,6 @@ document.querySelector('.done').addEventListener('click', async () => {
         solution = "B F U2 R U' D R2 B2 L2 F U2 R' L' U B2 D R2 U B2 U";
     } else {
         solution = min2phase.solve(present);
-        moves.innerHTML = solution;
-        setTimeout(() => { moves.innerHTML = '' }, 2000);
     }
     if (solution[0] !== 'E' || isCubeSolved()) {
         buttons.forEach(button => { button.style.display = 'none' });
