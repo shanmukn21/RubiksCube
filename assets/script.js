@@ -1470,7 +1470,7 @@ document.querySelector('.inputclr').addEventListener('click', () => {
         for (let j = 0; j < 6; j++) {
             if (parent.children[i].children[j].childElementCount > 0) {
                 let temp = parent.children[i].children[j].children[0];
-                //temp.classList.remove(temp.classList[1]);
+                temp.classList.remove(temp.classList[1]);
                 temp.addEventListener('click', () => {
                     if (caninput && inputcolor) {
                         if (temp.classList.length > 1) {
