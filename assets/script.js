@@ -1,16 +1,3 @@
-let width = document.documentElement.clientWidth;
-let height = document.documentElement.clientHeight;
-let buttons = document.querySelectorAll('button');
-let caninput = false, inputcolor = null;
-function changeclicking() {
-    if (youcan !== true) {
-        buttons.forEach(button => { button.style.pointerEvents = 'none' });
-    } else {
-        buttons.forEach(button => { button.style.pointerEvents = 'auto' });
-    }
-    document.querySelector('.reset').style.pointerEvents = 'auto';
-}
-
 for (let i = 0; i < 26; i++) {
     document.getElementById('cube').innerHTML += `<div class="piece">
             <div class="element left"></div>
@@ -38,11 +25,14 @@ for (let i = 0; i < 26; i++) {
 
 var colors = ['green', 'blue', 'white', 'yellow', 'orange', 'red'],
     directions = ['left', 'right', 'top', 'bottom', 'back', 'front'],
+    width = document.documentElement.clientWidth,
+    height = document.documentElement.clientHeight,
+    buttons = document.querySelectorAll('button'),
     pieces = document.getElementsByClassName('piece'),
     arrows = document.querySelector('.arrows'),
     combined = document.getElementById('combined'),
     scene = document.querySelector('.scene'),
-    rotateface = true, backing = false, solveit = false, youcan = true, hidesolution = false,
+    rotateface = true, backing = false, solveit = false, youcan = true, hidesolution = false, caninput = false, inputcolor = null,
     facerotated = [], direction = [],
     state = Array(6).fill().map(() => Array(3).fill().map(() => Array(3))),
     movecount = 0, rotateX = -35, rotateY = 45, count = 0, pi = 0, topcolor = 'white', leftcolor = 'green', frontcolor = 'red', downcolor = 'yellow', rightcolor = 'blue', backcolor = 'orange';
@@ -85,6 +75,122 @@ const idMap = [[
     [41, 40, 42]
 ]], whiteedges = [36, 6, 20, 5], whitecorners = [37, 38, 22, 21], midedges = [33, 34, 18, 17], middirections = ["front", "right", "back", "left"], yellowedges = [9, 40, 10, 24], yellowcorners = [25, 41, 42, 26],
     perspective = ['green', 'red', 'blue', 'orange'];
+
+const inputBox = document.getElementById('algorithm');
+const dropdown = document.getElementById('dropdown');
+
+const rubiksPatterns = [
+    { pattern: "Superflip", algorithm: "U R2 F B R B2 R U2 L B2 R U' D' R2 F R' L B2 U2 F2" },
+    { pattern: "Cube in a Cube", algorithm: "F L F U' R U F2 L2 U' L' U L' U F2 R' F'" },
+    { pattern: "Cross", algorithm: "U F B L2 U2 R2 D F2 B2 U R2" },
+    { pattern: "Four Spots", algorithm: "F2 B2 U D' R2 L2 U D'" },
+    { pattern: "Six Spots", algorithm: "U D' R L' F B' U D'" },
+    { pattern: "Vertical Stripes", algorithm: "F U F2 U' F' L F' L' F2 U' F U F' U F U" },
+    { pattern: "Horizontal Stripes", algorithm: "R U R' U R U2 R' U" },
+    { pattern: "Twister", algorithm: "R' U2 R F2 L' D2 L F2" },
+    { pattern: "Union Jack", algorithm: "U F2 R2 F' R U' R' U R F R' U" },
+    { pattern: "Diagonal Stripes", algorithm: "U2 R2 U2 R2 U2 R2" },
+    { pattern: "2x2 Checkerboard", algorithm: "R2 F2 U2" },
+    { pattern: "4x4 Checkerboard", algorithm: "R2 L2 F2 B2 U2 D2" },
+    { pattern: "Checkerboard Spiral", algorithm: "R2 U2 R2 U2 R2 U2" },
+    { pattern: "Checkerboard Rings", algorithm: "R2 U2 F2 U2 F2 U2 R2" },
+    { pattern: "Checkerboard Spiral 2", algorithm: "U2 R2 U2 R2 U2 R2" },
+    { pattern: "Checkerboard Wave", algorithm: "F2 U2 F2 U2 F2 U2" },
+    { pattern: "Checkerboard Zigzag", algorithm: "R2 F2 U2 R2 F2" },
+    { pattern: "Cube in Cube", algorithm: "F L F U' R U F2 L2 U' L' U L' U F2 R' F'" },
+    { pattern: "Cube in Cube in Cube", algorithm: "U' L' U' F' R2 B' R F U B2 U B' L U' F U R F'" },
+    { pattern: "Cube in Cube in Cube 2", algorithm: "F U' R2 B' R F U B2 U B' L U' F U R F' L' U'" },
+    { pattern: "Cube in Cube Flip", algorithm: "F L F U' R U F2 L2 U' L' U L' U F2 R' F' U2" },
+    { pattern: "Cube in Cube Twist", algorithm: "F L F U' R U F2 L2 U' L' U L' U F2 R' F' U" },
+    { pattern: "Cube in Cube Spiral", algorithm: "F L F U' R U F2 L2 U' L' U L' U F2 R' F' U2 R2" },
+    { pattern: "Cube in Cube Wave", algorithm: "F L F U' R U F2 L2 U' L' U L' U F2 R' F' U2 F2" },
+    { pattern: "Four Spots", algorithm: "F2 B2 U D' R2 L2 U D'" },
+    { pattern: "Six Spots", algorithm: "U D' R L' F B' U D'" },
+    { pattern: "Eight Spots", algorithm: "U2 D2 R2 L2 F2 B2" },
+    { pattern: "Cross 1", algorithm: "U F B L2 U2 R2 D F2 B2 U R2" },
+    { pattern: "Cross 2", algorithm: "F2 L2 U2 R2 D2 B2" },
+    { pattern: "Cross 3", algorithm: "U2 R2 F2 D2 L2 B2" },
+    { pattern: "Cross 4", algorithm: "R2 U2 F2 L2 D2 B2" },
+    { pattern: "Cross 5", algorithm: "F2 U2 R2 B2 D2 L2" },
+    { pattern: "Cross 6", algorithm: "U2 F2 L2 D2 R2 B2" },
+    { pattern: "Cross Spiral", algorithm: "U F B L2 U2 R2 D F2 B2 U R2 U2" },
+    { pattern: "Cross Wave", algorithm: "U F B L2 U2 R2 D F2 B2 U R2 F2" },
+    { pattern: "Cross Rings", algorithm: "U F B L2 U2 R2 D F2 B2 U R2 R2" },
+    { pattern: "Cross Zigzag", algorithm: "U F B L2 U2 R2 D F2 B2 U R2 F2 R2" },
+    { pattern: "Vertical Stripes", algorithm: "F U F2 U' F' L F' L' F2 U' F U F' U F U" },
+    { pattern: "Horizontal Stripes", algorithm: "R U R' U R U2 R' U" },
+    { pattern: "Diagonal Stripes", algorithm: "U2 R2 U2 R2 U2 R2" },
+    { pattern: "Spiral Stripes", algorithm: "U2 R2 U2 R2 U2 R2 U2" },
+    { pattern: "Wave Stripes", algorithm: "F2 U2 F2 U2 F2 U2 F2" },
+    { pattern: "Zigzag Stripes", algorithm: "R2 F2 U2 R2 F2 U2" },
+    { pattern: "Twister 1", algorithm: "R' U2 R F2 L' D2 L F2" },
+    { pattern: "Twister 2", algorithm: "F' U2 F R2 B' D2 B R2" },
+    { pattern: "Twister 3", algorithm: "L' U2 L B2 R' D2 R B2" },
+    { pattern: "Twister 4", algorithm: "B' U2 B L2 F' D2 F L2" },
+    { pattern: "Union Jack", algorithm: "U F2 R2 F' R U' R' U R F R' U" },
+    { pattern: "Union Jack Spiral", algorithm: "U F2 R2 F' R U' R' U R F R' U U2" },
+    { pattern: "Union Jack Wave", algorithm: "U F2 R2 F' R U' R' U R F R' U F2" },
+    { pattern: "Union Jack Rings", algorithm: "U F2 R2 F' R U' R' U R F R' U R2" },
+    { pattern: "Union Jack Zigzag", algorithm: "U F2 R2 F' R U' R' U R F R' U F2 R2" },
+    { pattern: "Spiral 1", algorithm: "U2 R2 F2 U2 R2 F2" },
+    { pattern: "Spiral 2", algorithm: "F2 U2 R2 F2 U2 R2" },
+    { pattern: "Spiral 3", algorithm: "R2 F2 U2 R2 F2 U2" },
+    { pattern: "Spiral 4", algorithm: "U2 F2 R2 U2 F2 R2" },
+    { pattern: "Wave 1", algorithm: "F2 U2 F2 U2 F2 U2" },
+    { pattern: "Wave 2", algorithm: "U2 F2 U2 F2 U2 F2" },
+    { pattern: "Wave 3", algorithm: "R2 U2 R2 U2 R2 U2" },
+    { pattern: "Wave 4", algorithm: "U2 R2 U2 R2 U2 R2" },
+    { pattern: "Rings 1", algorithm: "R2 U2 F2 R2 U2 F2" },
+    { pattern: "Rings 2", algorithm: "F2 R2 U2 F2 R2 U2" },
+    { pattern: "Rings 3", algorithm: "U2 F2 R2 U2 F2 R2" },
+    { pattern: "Rings 4", algorithm: "R2 F2 U2 R2 F2 U2" },
+    { pattern: "Zigzag 1", algorithm: "R2 F2 U2 R2 F2" },
+    { pattern: "Zigzag 2", algorithm: "F2 R2 U2 F2 R2" },
+    { pattern: "Zigzag 3", algorithm: "U2 R2 F2 U2 R2" },
+    { pattern: "Zigzag 4", algorithm: "F2 U2 R2 F2 U2" },
+    { pattern: "Python", algorithm: "F2 U R' L F2 R L' U F2" },
+    { pattern: "Anaconda", algorithm: "F2 U R' L F2 R L' U F2 U2" },
+    { pattern: "Boa", algorithm: "F2 U R' L F2 R L' U F2 F2" },
+    { pattern: "Cobra", algorithm: "F2 U R' L F2 R L' U F2 R2" },
+    { pattern: "Dots 1", algorithm: "U2 R2 F2 R2 U2" },
+    { pattern: "Dots 2", algorithm: "F2 U2 R2 U2 F2" },
+    { pattern: "Dots 3", algorithm: "R2 F2 U2 F2 R2" },
+    { pattern: "Dots 4", algorithm: "U2 F2 R2 F2 U2" },
+    { pattern: "Chessboard", algorithm: "U2 R2 F2 R2 F2 U2" },
+    { pattern: "Chessboard Spiral", algorithm: "U2 R2 F2 R2 F2 U2 U2" },
+    { pattern: "Chessboard Wave", algorithm: "U2 R2 F2 R2 F2 U2 F2" },
+    { pattern: "Chessboard Rings", algorithm: "U2 R2 F2 R2 F2 U2 R2" },
+    { pattern: "Chessboard Zigzag", algorithm: "U2 R2 F2 R2 F2 U2 F2 R2" },
+    { pattern: "Tetris", algorithm: "R U R' U R U2 R'" },
+    { pattern: "Tetris Spiral", algorithm: "R U R' U R U2 R' U2" },
+    { pattern: "Tetris Wave", algorithm: "R U R' U R U2 R' F2" },
+    { pattern: "Tetris Rings", algorithm: "R U R' U R U2 R' R2" },
+    { pattern: "Tetris Zigzag", algorithm: "R U R' U R U2 R' F2 R2" },
+    { pattern: "Ladder", algorithm: "F U F' U F U2 F'" },
+    { pattern: "Ladder Spiral", algorithm: "F U F' U F U2 F' U2" },
+    { pattern: "Ladder Wave", algorithm: "F U F' U F U2 F' F2" },
+    { pattern: "Ladder Rings", algorithm: "F U F' U F U2 F' R2" },
+    { pattern: "Ladder Zigzag", algorithm: "F U F' U F U2 F' F2 R2" },
+    { pattern: "Staircase", algorithm: "R U R' U R U2 R' U" },
+    { pattern: "Staircase Spiral", algorithm: "R U R' U R U2 R' U U2" },
+    { pattern: "Staircase Wave", algorithm: "R U R' U R U2 R' U F2" },
+    { pattern: "Staircase Rings", algorithm: "R U R' U R U2 R' U R2" },
+    { pattern: "Staircase Zigzag", algorithm: "R U R' U R U2 R' U F2 R2" },
+    { pattern: "Wire", algorithm: "R2 F2 U2 R2 F2" },
+    { pattern: "Wire Spiral", algorithm: "R2 F2 U2 R2 F2 U2" },
+    { pattern: "Wire Wave", algorithm: "R2 F2 U2 R2 F2 F2" },
+    { pattern: "Wire Rings", algorithm: "R2 F2 U2 R2 F2 R2" },
+    { pattern: "Wire Zigzag", algorithm: "R2 F2 U2 R2 F2 F2 R2" }
+];
+
+function changeclicking() {
+    if (youcan !== true) {
+        buttons.forEach(button => { button.style.pointerEvents = 'none' });
+    } else {
+        buttons.forEach(button => { button.style.pointerEvents = 'auto' });
+    }
+    document.querySelector('.reset').style.pointerEvents = 'auto';
+}
 
 function mx(i, j) {
     return ([2, 4, 3, 5][j % 4 | 0] + i % 2 * ((j | 0) % 4 * 2 + 3) + 2 * (i / 2 | 0)) % 6;
@@ -1287,6 +1393,25 @@ function simplifyMoves(moves) {
     return { moves: moveStack.join(" "), movecount: moveStack.length };
 }
 
+function showDropdown(patterns) {
+    dropdown.innerHTML = '';
+    if (patterns.length === 0) {
+        dropdown.style.display = 'none';
+        return;
+    }
+    patterns.forEach(({ pattern, algorithm }) => {
+        const option = document.createElement('div');
+        option.className = 'dropdown-option';
+        option.textContent = `${pattern} : ${algorithm}`;
+        option.addEventListener('click', () => {
+            inputBox.value = algorithm;
+            dropdown.style.display = 'none';
+        });
+        dropdown.appendChild(option);
+    });
+    dropdown.style.display = 'block';
+}
+
 document.addEventListener("keydown", (event) => {
     if (youcan) {
         switch (event.key) {
@@ -1452,13 +1577,16 @@ document.querySelector('.inputclr').addEventListener('click', () => {
     scrambledstring = '';
     facerotated.length = 0;
     direction.length = 0;
+
     buttons.forEach(button => { button.style.display = 'none' });
     setTimeout(() => {
         buttons.forEach(button => { button.style.display = 'inline-block' });
         document.querySelector('.srev').style.display = 'none';
-        document.querySelector('.solve').style.display = 'none';
-        document.querySelector('.fast').style.display = 'none';
+        document.querySelector('.inputclr').style.display = 'none';
+        document.querySelector('.inputmvs').style.display = 'none';
     }, 10);
+    document.querySelectorAll('.inputhide').forEach(hider => { hider.style.display = 'none' });
+
     if (scene.classList.contains('levitate')) {
         scene.classList.remove('levitate');
     }
@@ -1545,14 +1673,21 @@ document.querySelector('.inputmvs').addEventListener('click', () => {
         setTimeout(() => {
             buttons.forEach(button => { button.style.display = 'inline-block' });
             document.querySelector('.srev').style.display = 'none';
-            document.querySelector('.solve').style.display = 'none';
-            document.querySelector('.fast').style.display = 'none';
+            document.querySelector('.inputclr').style.display = 'none';
+            document.querySelector('.inputmvs').style.display = 'none';
         }, 10);
-        if (scene.classList.contains('levitate')) {
-            scene.classList.remove('levitate');
-        }
         document.querySelectorAll('.inputhide').forEach(hider => { hider.style.display = 'none' });
         document.getElementById('algorithm').style.display = 'block';
         youcan = false;
     }
+});
+
+inputBox.addEventListener('focus', () => {
+    showDropdown(rubiksPatterns);
+});
+
+inputBox.addEventListener('input', () => {
+    const value = inputBox.value.toLowerCase();
+    const filteredPatterns = rubiksPatterns.filter(({ pattern }) => pattern.toLowerCase().includes(value));
+    dropdown.style.display = 'none';
 });

@@ -427,6 +427,7 @@ button:active {
     justify-content: center;
     padding: 2.5px;
 }
+
 .graph {
     position: absolute;
     top: 10px;
@@ -488,11 +489,16 @@ button:active {
     padding: 2px;
 }
 
-#algorithm{
+#algorithm {
     display: none;
     height: 20px;
     border-radius: 4px;
     padding: 2px 6px;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: none;
 }
 
 .input-container {
@@ -530,6 +536,25 @@ button:active {
 
 .sub {
     font-size: 24px;
+}
+
+.dropdown {
+    display: none;
+    border-radius: 8px;
+    width: 80%;
+    max-height: 15vh;
+    overflow-y: auto;
+    font-size: 12px;
+    background-color: white;
+}
+
+.dropdown-option {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.dropdown-option:hover {
+    background-color: #f0f0f0;
 }
 
 @media(min-width:1380px) {
@@ -597,7 +622,7 @@ button:active {
         zoom: 1.8;
         order: 1;
         width: 100%;
-        justify-content: center;
+        justify-content: space-around;
         gap: 10px;
     }
 
