@@ -81,106 +81,19 @@ const dropdown = document.getElementById('dropdown');
 
 const rubiksPatterns = [
     { pattern: "Superflip", algorithm: "U R2 F B R B2 R U2 L B2 R U' D' R2 F R' L B2 U2 F2" },
-    { pattern: "Cube in a Cube", algorithm: "F L F U' R U F2 L2 U' L' U L' U F2 R' F'" },
-    { pattern: "Cross", algorithm: "U F B L2 U2 R2 D F2 B2 U R2" },
-    { pattern: "Four Spots", algorithm: "F2 B2 U D' R2 L2 U D'" },
-    { pattern: "Six Spots", algorithm: "U D' R L' F B' U D'" },
-    { pattern: "Vertical Stripes", algorithm: "F U F2 U' F' L F' L' F2 U' F U F' U F U" },
-    { pattern: "Horizontal Stripes", algorithm: "R U R' U R U2 R' U" },
-    { pattern: "Twister", algorithm: "R' U2 R F2 L' D2 L F2" },
-    { pattern: "Union Jack", algorithm: "U F2 R2 F' R U' R' U R F R' U" },
-    { pattern: "Diagonal Stripes", algorithm: "U2 R2 U2 R2 U2 R2" },
-    { pattern: "2x2 Checkerboard", algorithm: "R2 F2 U2" },
-    { pattern: "4x4 Checkerboard", algorithm: "R2 L2 F2 B2 U2 D2" },
-    { pattern: "Checkerboard Spiral", algorithm: "R2 U2 R2 U2 R2 U2" },
-    { pattern: "Checkerboard Rings", algorithm: "R2 U2 F2 U2 F2 U2 R2" },
-    { pattern: "Checkerboard Spiral 2", algorithm: "U2 R2 U2 R2 U2 R2" },
-    { pattern: "Checkerboard Wave", algorithm: "F2 U2 F2 U2 F2 U2" },
-    { pattern: "Checkerboard Zigzag", algorithm: "R2 F2 U2 R2 F2" },
-    { pattern: "Cube in Cube", algorithm: "F L F U' R U F2 L2 U' L' U L' U F2 R' F'" },
-    { pattern: "Cube in Cube in Cube", algorithm: "U' L' U' F' R2 B' R F U B2 U B' L U' F U R F'" },
-    { pattern: "Cube in Cube in Cube 2", algorithm: "F U' R2 B' R F U B2 U B' L U' F U R F' L' U'" },
-    { pattern: "Cube in Cube Flip", algorithm: "F L F U' R U F2 L2 U' L' U L' U F2 R' F' U2" },
-    { pattern: "Cube in Cube Twist", algorithm: "F L F U' R U F2 L2 U' L' U L' U F2 R' F' U" },
-    { pattern: "Cube in Cube Spiral", algorithm: "F L F U' R U F2 L2 U' L' U L' U F2 R' F' U2 R2" },
-    { pattern: "Cube in Cube Wave", algorithm: "F L F U' R U F2 L2 U' L' U L' U F2 R' F' U2 F2" },
-    { pattern: "Four Spots", algorithm: "F2 B2 U D' R2 L2 U D'" },
-    { pattern: "Six Spots", algorithm: "U D' R L' F B' U D'" },
-    { pattern: "Eight Spots", algorithm: "U2 D2 R2 L2 F2 B2" },
-    { pattern: "Cross 1", algorithm: "U F B L2 U2 R2 D F2 B2 U R2" },
-    { pattern: "Cross 2", algorithm: "F2 L2 U2 R2 D2 B2" },
-    { pattern: "Cross 3", algorithm: "U2 R2 F2 D2 L2 B2" },
-    { pattern: "Cross 4", algorithm: "R2 U2 F2 L2 D2 B2" },
-    { pattern: "Cross 5", algorithm: "F2 U2 R2 B2 D2 L2" },
-    { pattern: "Cross 6", algorithm: "U2 F2 L2 D2 R2 B2" },
-    { pattern: "Cross Spiral", algorithm: "U F B L2 U2 R2 D F2 B2 U R2 U2" },
-    { pattern: "Cross Wave", algorithm: "U F B L2 U2 R2 D F2 B2 U R2 F2" },
-    { pattern: "Cross Rings", algorithm: "U F B L2 U2 R2 D F2 B2 U R2 R2" },
-    { pattern: "Cross Zigzag", algorithm: "U F B L2 U2 R2 D F2 B2 U R2 F2 R2" },
-    { pattern: "Vertical Stripes", algorithm: "F U F2 U' F' L F' L' F2 U' F U F' U F U" },
-    { pattern: "Horizontal Stripes", algorithm: "R U R' U R U2 R' U" },
-    { pattern: "Diagonal Stripes", algorithm: "U2 R2 U2 R2 U2 R2" },
-    { pattern: "Spiral Stripes", algorithm: "U2 R2 U2 R2 U2 R2 U2" },
-    { pattern: "Wave Stripes", algorithm: "F2 U2 F2 U2 F2 U2 F2" },
-    { pattern: "Zigzag Stripes", algorithm: "R2 F2 U2 R2 F2 U2" },
-    { pattern: "Twister 1", algorithm: "R' U2 R F2 L' D2 L F2" },
-    { pattern: "Twister 2", algorithm: "F' U2 F R2 B' D2 B R2" },
-    { pattern: "Twister 3", algorithm: "L' U2 L B2 R' D2 R B2" },
-    { pattern: "Twister 4", algorithm: "B' U2 B L2 F' D2 F L2" },
-    { pattern: "Union Jack", algorithm: "U F2 R2 F' R U' R' U R F R' U" },
-    { pattern: "Union Jack Spiral", algorithm: "U F2 R2 F' R U' R' U R F R' U U2" },
-    { pattern: "Union Jack Wave", algorithm: "U F2 R2 F' R U' R' U R F R' U F2" },
-    { pattern: "Union Jack Rings", algorithm: "U F2 R2 F' R U' R' U R F R' U R2" },
-    { pattern: "Union Jack Zigzag", algorithm: "U F2 R2 F' R U' R' U R F R' U F2 R2" },
-    { pattern: "Spiral 1", algorithm: "U2 R2 F2 U2 R2 F2" },
-    { pattern: "Spiral 2", algorithm: "F2 U2 R2 F2 U2 R2" },
-    { pattern: "Spiral 3", algorithm: "R2 F2 U2 R2 F2 U2" },
-    { pattern: "Spiral 4", algorithm: "U2 F2 R2 U2 F2 R2" },
-    { pattern: "Wave 1", algorithm: "F2 U2 F2 U2 F2 U2" },
-    { pattern: "Wave 2", algorithm: "U2 F2 U2 F2 U2 F2" },
-    { pattern: "Wave 3", algorithm: "R2 U2 R2 U2 R2 U2" },
-    { pattern: "Wave 4", algorithm: "U2 R2 U2 R2 U2 R2" },
-    { pattern: "Rings 1", algorithm: "R2 U2 F2 R2 U2 F2" },
-    { pattern: "Rings 2", algorithm: "F2 R2 U2 F2 R2 U2" },
-    { pattern: "Rings 3", algorithm: "U2 F2 R2 U2 F2 R2" },
-    { pattern: "Rings 4", algorithm: "R2 F2 U2 R2 F2 U2" },
-    { pattern: "Zigzag 1", algorithm: "R2 F2 U2 R2 F2" },
-    { pattern: "Zigzag 2", algorithm: "F2 R2 U2 F2 R2" },
-    { pattern: "Zigzag 3", algorithm: "U2 R2 F2 U2 R2" },
-    { pattern: "Zigzag 4", algorithm: "F2 U2 R2 F2 U2" },
-    { pattern: "Python", algorithm: "F2 U R' L F2 R L' U F2" },
-    { pattern: "Anaconda", algorithm: "F2 U R' L F2 R L' U F2 U2" },
-    { pattern: "Boa", algorithm: "F2 U R' L F2 R L' U F2 F2" },
-    { pattern: "Cobra", algorithm: "F2 U R' L F2 R L' U F2 R2" },
-    { pattern: "Dots 1", algorithm: "U2 R2 F2 R2 U2" },
-    { pattern: "Dots 2", algorithm: "F2 U2 R2 U2 F2" },
-    { pattern: "Dots 3", algorithm: "R2 F2 U2 F2 R2" },
-    { pattern: "Dots 4", algorithm: "U2 F2 R2 F2 U2" },
-    { pattern: "Chessboard", algorithm: "U2 R2 F2 R2 F2 U2" },
-    { pattern: "Chessboard Spiral", algorithm: "U2 R2 F2 R2 F2 U2 U2" },
-    { pattern: "Chessboard Wave", algorithm: "U2 R2 F2 R2 F2 U2 F2" },
-    { pattern: "Chessboard Rings", algorithm: "U2 R2 F2 R2 F2 U2 R2" },
-    { pattern: "Chessboard Zigzag", algorithm: "U2 R2 F2 R2 F2 U2 F2 R2" },
-    { pattern: "Tetris", algorithm: "R U R' U R U2 R'" },
-    { pattern: "Tetris Spiral", algorithm: "R U R' U R U2 R' U2" },
-    { pattern: "Tetris Wave", algorithm: "R U R' U R U2 R' F2" },
-    { pattern: "Tetris Rings", algorithm: "R U R' U R U2 R' R2" },
-    { pattern: "Tetris Zigzag", algorithm: "R U R' U R U2 R' F2 R2" },
-    { pattern: "Ladder", algorithm: "F U F' U F U2 F'" },
-    { pattern: "Ladder Spiral", algorithm: "F U F' U F U2 F' U2" },
-    { pattern: "Ladder Wave", algorithm: "F U F' U F U2 F' F2" },
-    { pattern: "Ladder Rings", algorithm: "F U F' U F U2 F' R2" },
-    { pattern: "Ladder Zigzag", algorithm: "F U F' U F U2 F' F2 R2" },
-    { pattern: "Staircase", algorithm: "R U R' U R U2 R' U" },
-    { pattern: "Staircase Spiral", algorithm: "R U R' U R U2 R' U U2" },
-    { pattern: "Staircase Wave", algorithm: "R U R' U R U2 R' U F2" },
-    { pattern: "Staircase Rings", algorithm: "R U R' U R U2 R' U R2" },
-    { pattern: "Staircase Zigzag", algorithm: "R U R' U R U2 R' U F2 R2" },
-    { pattern: "Wire", algorithm: "R2 F2 U2 R2 F2" },
-    { pattern: "Wire Spiral", algorithm: "R2 F2 U2 R2 F2 U2" },
-    { pattern: "Wire Wave", algorithm: "R2 F2 U2 R2 F2 F2" },
-    { pattern: "Wire Rings", algorithm: "R2 F2 U2 R2 F2 R2" },
-    { pattern: "Wire Zigzag", algorithm: "R2 F2 U2 R2 F2 F2 R2" }
+    { pattern: "Perfect Scramble", algorithm: "D2 F2 R2 D2 L2 U F2 U' F' U F2 U' R2 B' F R' D2 F' D' L" },
+    { pattern: "Cube in a cube", algorithm: "F L F U' R U F2 L2 U' L' B D' B' L2 U" },
+    { pattern: "Cube in a cube in a cube", algorithm: "U' L' U' F' R2 B' R F U B2 U B' L U' F U R F'" },
+    { pattern: "Twisted rings", algorithm: "F D F' D2 L' B' U L D R U L' F' U L U2" },
+    { pattern: "Exchanged rings", algorithm: "B' U' B' L' D B U D2 B U L D' L' U' L2 D" },
+    { pattern: "Twisted peaks", algorithm: "F B' U F U F U L B L2 B' U F' L U L' B" },
+    { pattern: "Exchanged peaks", algorithm: "F U2 L F L' B L U B' R' L' U R' D' F' B R2" },
+    { pattern: "Megatron", algorithm: "U L D R' F D2 R2 F2 R' F D2 B L2 U2 D' R2 U R2 B2 L2" },
+    { pattern: "HI", algorithm: "L2 D' U' B2 F2 D' U' R2" },
+    { pattern: "Plus minus", algorithm: "U2 R2 L2 U2 R2 L2" },
+    { pattern: "Chess", algorithm: "U2 D2 F2 B2 L2 R2" },
+    { pattern: "Chess in cube", algorithm: "B D F' B' D L2 U L U' B D' R B R D' R L' F U2 D" },
+    { pattern: "anaconda", algorithm: "L U B' U' R L' B R' F B' D R D' F'" },
 ];
 
 function changeclicking() {
@@ -320,8 +233,6 @@ function animateRotation(face, cw, currentTime) {
         }, 400);
     }
 }
-
-window.addEventListener('load', assembleCube);
 
 function rotateCube(arrow) {
     switch (arrow) {
@@ -1298,6 +1209,7 @@ function debug(solution) {
 
     processChar(0, ans, "solution");
 }
+
 function position() {
     if (topcolor === 'yellow') {
         rotateCube('ArrowUp');
@@ -1411,6 +1323,8 @@ function showDropdown(patterns) {
     });
     dropdown.style.display = 'block';
 }
+
+assembleCube();
 
 document.addEventListener("keydown", (event) => {
     if (youcan) {
@@ -1616,9 +1530,7 @@ document.querySelector('.inputclr').addEventListener('click', () => {
 
 document.querySelector('.done').addEventListener('click', async () => {
     position();
-
     let nowhide = false;
-
     if (frommoves) {
         let usermoves = document.getElementById('algorithm').value;
         if (isValidRubiksAlgorithm(usermoves)) {
@@ -1679,6 +1591,9 @@ document.querySelector('.inputmvs').addEventListener('click', () => {
         document.querySelectorAll('.inputhide').forEach(hider => { hider.style.display = 'none' });
         document.getElementById('algorithm').style.display = 'block';
         youcan = false;
+    } else {
+        moves.innerHTML = 'Solve the cube first';
+        setTimeout(() => { moves.innerHTML = '' }, 2000);
     }
 });
 
